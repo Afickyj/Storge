@@ -1,6 +1,13 @@
-<h2>Registrace</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Zaregistrovat se</button>
-</form>
+{% extends "base.html" %}
+
+{% block title %}Registrace{% endblock %}
+
+{% block content %}
+    <h2>Registrace</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Zaregistrovat se</button>
+    </form>
+    <p>Již máš účet? <a href="{% url 'login' %}">Přihlas se</a></p>
+{% endblock %}
