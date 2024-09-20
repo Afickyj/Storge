@@ -15,7 +15,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     city = models.CharField(max_length=100, blank=True)
     address = models.CharField(max_length=255, blank=True)
-    avatar = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True)
+    avatar = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics', blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='USER')
     communication_channel = models.CharField(max_length=10, choices=COMMUNICATION_CHANNEL_CHOICES, default='EMAIL')
 
