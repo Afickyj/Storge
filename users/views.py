@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .models import Category, Product
+from django.conf import settings
 
 
 # Registrace uživatele
@@ -46,3 +48,16 @@ def profile_update(request):
     return render(request, 'users/profile_update.html', context)
 
 
+def category_list(request):
+    categories = Category.objects.all()
+    print("Načtené kategorie:", categories)  # Ladicí výpis
+    return render(request, 'users/category_list.html', {'categories': categories})
+
+
+def home(request):
+    print("Database NAME in view:", settings.DATABASES['default']['NAME'])
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    print("Categories in view:", categories)
+    print("Products in view:", products)
+    return render(request, 'users/home.html', {'categories': categories, 'products': products})

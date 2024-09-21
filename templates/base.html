@@ -45,7 +45,13 @@
         <a href="{% url 'home' %}">Domů</a>
         {% if user.is_authenticated %}
             <span>Vítej, {{ user.username }}!</span>
-            <a href="{% url 'logout' %}">Odhlásit se</a>
+
+            <!-- Přidání POST formuláře pro odhlášení -->
+            <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:#333; text-decoration: underline; cursor:pointer;">Odhlásit se</button>
+            </form>
+
             <a href="{% url 'profile' %}">Profil</a>
         {% else %}
             <a href="{% url 'login' %}">Přihlásit se</a>

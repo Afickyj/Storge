@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Available Products</h2>
+
+{% for category in categories %}
+    <h3>{{ category.name }}</h3>
+    {% if category.products.all %}
+        <ul>
+            {% for product in category.products.all %}
+                <li>{{ product.name }} - {{ product.price }} USD</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No products in this category.</p>
+    {% endif %}
+{% empty %}
+    <p>No categories found.</p>
+{% endfor %}
+{% endblock %}
