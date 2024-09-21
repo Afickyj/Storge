@@ -8,7 +8,10 @@
     {% if category.products.all %}
         <ul>
             {% for product in category.products.all %}
-                <li>{{ product.name }} - {{ product.price }} USD</li>
+                <li>
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:200px; max-height:200px;">
+                    {{ product.name }} - {{ product.price }} USD
+                </li>
             {% endfor %}
         </ul>
     {% else %}
