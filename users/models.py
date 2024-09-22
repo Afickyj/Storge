@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Profile(models.Model):
     ROLE_CHOICES = [
         ('ADMINISTRATOR', 'Administrator'),
@@ -42,6 +41,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(max_length=200, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    availability = models.BooleanField(default=True)  # Nové pole pro dostupnost
+    author = models.ForeignKey(User, related_name='products', on_delete=models.SET_NULL, null=True, blank=True)  # Nové pole pro autora
 
     def __str__(self):
         return self.name
