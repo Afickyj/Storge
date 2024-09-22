@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Vytvoření objednávky{% endblock %}
+
+{% block content %}
+    <h2>Vytvoření objednávky</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Objednat</button>
+    </form>
+    <h3>Váš košík</h3>
+    {% include 'users/cart_detail.html' %}
+{% endblock %}

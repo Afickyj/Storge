@@ -19,6 +19,6 @@
 
 ### Další úkoly:
 - [ ] Přehled objednávek uživatele (pro uživatele i administrátora)
-- [ ] Editace uživatelského účtu (údaje)
-- [ ] Přidání autora do administrátorského panelu
+- [x] Editace uživatelského účtu (údaje)
+- [x] Přidání autora do administrátorského panelu
 - [ ] Estetické a funkční požadavky

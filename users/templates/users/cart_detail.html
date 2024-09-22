@@ -19,7 +19,13 @@
                 {% for item in cart %}
                     <tr>
                         <td>
-                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
+                            {% elif item.product.image_url %}
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
+                            {% else %}
+                                <img src="path/to/default/image.jpg" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
+                            {% endif %}
                             {{ item.product.name }}
                         </td>
                         <td>{{ item.price }} Kč</td>
@@ -42,8 +48,8 @@
             </tbody>
         </table>
         <h3>Celkem: {{ cart.get_total_price }} Kč</h3>
-        <!-- Můžeš přidat tlačítko pro dokončení objednávky -->
-        <a href="#" class="btn btn-success">Pokračovat k objednávce</a>
+        <!-- Přidáme tlačítko pro dokončení objednávky -->
+        <a href="{% url 'order_create' %}" class="btn btn-success">Pokračovat k objednávce</a>
     {% else %}
         <p>Váš košík je prázdný.</p>
     {% endif %}
