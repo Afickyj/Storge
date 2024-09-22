@@ -57,7 +57,6 @@
             color: #fff;
             text-align: center;
             padding: 10px 0;
-            position: relative;
         }
         /* Zprávy */
         .messages {
@@ -99,6 +98,18 @@
             padding-top: 0;
             padding-bottom: 0;
         }
+        /* Centrování a zvětšení vyhledávacího pole */
+        .navbar-center {
+            width: 40%; /* Zvětšená šířka */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .navbar-center .form-control {
+            height: 2.5rem; /* Užší výška */
+        }
+        .navbar-center .btn {
+            height: 2.5rem; /* Zarovnání výšky tlačítka s inputem */
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -135,10 +146,10 @@
                         </ul>
                     </li>
                 </ul>
-                <!-- Vyhledávací formulář -->
-                <form class="d-flex ms-3" method="get" action="{% url 'product_search' %}">
-                    <input class="form-control form-control-sm me-2" type="search" name="query" placeholder="Hledat produkty" aria-label="Hledat" value="{{ request.GET.query }}">
-                    <button class="btn btn-outline-light btn-sm" type="submit">Hledat</button>
+                <!-- Vyhledávací formulář uprostřed a zvětšený -->
+                <form class="d-flex navbar-center" method="get" action="{% url 'product_search' %}">
+                    <input class="form-control me-2" type="search" name="query" placeholder="Hledat produkty" aria-label="Hledat" value="{{ request.GET.query }}">
+                    <button class="btn btn-outline-light" type="submit">Hledat</button>
                 </form>
                 <!-- Pravá strana navigace -->
                 <ul class="navbar-nav mb-2 mb-lg-0">
@@ -223,6 +234,48 @@
                 });
             });
         });
+    </script>
+    <!-- JavaScript pro widget počasí -->
+    <script>
+        document.getElementById('weather-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var city = document.getElementById('city-input').value;
+            if (city) {
+                getCoordinates(city);
+            } else {
+                document.getElementById('weather-result').innerHTML = "Zadejte platné město.";
+            }
+        });
+
+        function getCoordinates(city) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var latitude = data[0].lat;
+                        var longitude = data[0].lon;
+                        getWeather(latitude, longitude, city);
+                    } else {
+                        document.getElementById('weather-result').innerHTML = "Město nebylo nalezeno.";
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('weather-result').innerHTML = "Chyba při získávání souřadnic.";
+                });
+        }
+
+        function getWeather(latitude, longitude, city) {
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=Europe%2FPrague`)
+                .then(response => response.json())
+                .then(data => {
+                    var weatherDiv = document.getElementById('weather-result');
+                    var weather = data.current_weather;
+                    weatherDiv.innerHTML = `${city}: ${weather.temperature} °C, ${weather.windspeed} m/s`;
+                })
+                .catch(() => {
+                    document.getElementById('weather-result').innerHTML = "Chyba při načítání počasí.";
+                });
+        }
     </script>
     {% block extra_js %}{% endblock %}
 </body>
