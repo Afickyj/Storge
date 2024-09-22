@@ -98,12 +98,12 @@ def product_list(request):
     products = Product.objects.all()
     categories = Category.objects.all()
 
-    # Filtrace podle kategorie (volitelné)
     category_id = request.GET.get('category')
+    current_category = None
     if category_id:
+        current_category = get_object_or_404(Category, id=category_id)
         products = products.filter(category_id=category_id)
 
-    # Stránkování (volitelné)
     paginator = Paginator(products, 12)  # 12 produktů na stránku
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -111,6 +111,7 @@ def product_list(request):
     context = {
         'products': page_obj,
         'categories': categories,
+        'current_category': current_category,  # Přidání aktuální kategorie do kontextu
     }
     return render(request, 'users/product_list.html', context)
 

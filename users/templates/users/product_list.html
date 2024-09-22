@@ -1,22 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}Seznam Produktů{% endblock %}
+{% block title %}
+    {% if current_category %}
+        {{ current_category.name }}
+    {% else %}
+        Seznam Produktů
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-    <h2>Seznam Produktů</h2>
+    <!-- Titulek stránky -->
+    <h2>
+        {% if current_category %}
+            {{ current_category.name }}
+        {% else %}
+            Seznam Produktů
+        {% endif %}
+    </h2>
 
-    <!-- Filtrace podle kategorie -->
-    <div class="mb-4">
-        <h4>Kategorie</h4>
-        <ul class="list-inline">
-            <li class="list-inline-item"><a href="{% url 'product_list' %}" class="{% if not request.GET.category %}active{% endif %}">Vše</a></li>
-            {% for category in categories %}
+    <!-- Filtrace podle kategorie - zobrazí se pouze, když není vybrána žádná kategorie -->
+    {% if not current_category %}
+        <div class="mb-4">
+            <h4>Kategorie</h4>
+            <ul class="list-inline">
                 <li class="list-inline-item">
-                    <a href="?category={{ category.id }}" class="{% if request.GET.category == category.id|stringformat:"s" %}active{% endif %}">{{ category.name }}</a>
+                    <a href="{% url 'product_list' %}" class="{% if not request.GET.category %}active{% endif %}">Vše</a>
                 </li>
-            {% endfor %}
-        </ul>
-    </div>
+                {% for category in categories %}
+                    <li class="list-inline-item">
+                        <a href="?category={{ category.id }}" class="{% if request.GET.category == category.id|stringformat:"s" %}active{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     <!-- Seznam Produktů -->
     <div class="row">
@@ -31,7 +50,7 @@
                             {% csrf_token %}
                             <div class="input-group">
                                 <input type="number" name="quantity" value="1" min="1" class="form-control">
-                                <button type="submit" class="btn btn-success">Add to Cart</button>
+                                <button type="submit" class="btn btn-success">Přidat do košíku</button>
                             </div>
                         </form>
                     </div>

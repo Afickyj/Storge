@@ -58,6 +58,7 @@ TEMPLATES = [
                 # Přidání vlastních context procesorů
                 "users.context_processors.search_form",
                 "users.context_processors.cart",
+                "users.context_processors.categories",  # Nový context processor
             ],
         },
     },

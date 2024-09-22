@@ -11,7 +11,7 @@
 - [x] Registrace uživatele
 - [x] Přihlášení a odhlášení uživatele
 - [ ] Widget počasí v lokalitě uživatele
-- [ ] Seznam produktů (mřížka nebo seznam)
+- [x] Seznam produktů (mřížka nebo seznam)
 - [x] Vyhledávání produktů
 - [x] Ajax stránkování a třídění produktů
 - [x] Přidání produktu do košíku
