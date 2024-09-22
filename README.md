@@ -10,7 +10,7 @@
 ### Uživatel:
 - [x] Registrace uživatele
 - [x] Přihlášení a odhlášení uživatele
-- [ ] Widget počasí v lokalitě uživatele
+- [x] Widget počasí v lokalitě uživatele
 - [x] Seznam produktů (mřížka nebo seznam)
 - [x] Vyhledávání produktů
 - [x] Ajax stránkování a třídění produktů
