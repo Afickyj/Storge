@@ -1,22 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vyhledávání Produktů</title>
-</head>
-<body>
-    <h1>Vyhledávání Produktů</h1>
-    <form method="get" action="{% url 'Vyhledat produkty' %}">
-        {{ form.as_p }}
-        <button type="submit">Vyhledat</button>
-    </form>
+{% extends 'base.html' %}
 
-    <h2>Výsledky</h2>
-    <ul>
-        {% for product in results %}
-            <li>{{ product.name }} - {{ product.description }}</li>
-        {% empty %}
-            <li>Žádné produkty nebyly nalezeny.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% block title %}Výsledky vyhledávání{% endblock %}
+
+{% block content %}
+    <h2>Výsledky vyhledávání</h2>
+
+    {% if results %}
+        <ul class="list-group mb-4">
+            {% for product in results %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                        <div>
+                            <strong>{{ product.name }}</strong><br>
+                            {{ product.price }} Kč
+                        </div>
+                    </div>
+                    <div>
+                        <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
+                            <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Stránkování -->
+        {% if results.has_other_pages %}
+            <nav aria-label="Navigace stránek">
+                <ul class="pagination">
+                    {% if results.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ results.previous_page_number }}" aria-label="Předchozí">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Předchozí">
+                                <span aria-hidden="true">&laquo;</span>
+                            </span>
+                        </li>
+                    {% endif %}
+                    {% for num in results.paginator.page_range %}
+                        {% if results.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if results.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ results.next_page_number }}" aria-label="Další">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-label="Další">
+                                <span aria-hidden="true">&raquo;</span>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <p>Žádné produkty nebyly nalezeny pro vaši vyhledávací frázi.</p>
+    {% endif %}
+{% endblock %}
