@@ -18,7 +18,7 @@
 - [x] Košík s možností objednání produktů
 
 ### Další úkoly:
-- [ ] Přehled objednávek uživatele (pro uživatele i administrátora)
+- [x] Přehled objednávek uživatele (pro uživatele i administrátora)
 - [x] Editace uživatelského účtu (údaje)
 - [x] Přidání autora do administrátorského panelu
 - [ ] Estetické a funkční požadavky
