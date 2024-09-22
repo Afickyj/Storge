@@ -5,15 +5,83 @@
     <title>{% block title %}Storge{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Vlastní CSS -->
     <style>
-        /* Základní stylování pro lepší vzhled */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        /* Resetování stylů */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        /* Nastavení těla stránky */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Horní navigační panel */
+        .navbar-custom {
+            background: linear-gradient(90deg, #004d00, #000000);
+            position: relative;
+        }
+        .navbar-custom .nav-link, .navbar-custom .navbar-brand {
+            color: #fff !important;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+        .navbar-custom .nav-link:hover, .navbar-custom .navbar-brand:hover {
+            color: #66cc66 !important; /* Méně světlá zelená */
+        }
+        /* Odkazy a tlačítka obecně */
+        a, .btn {
+            transition: color 0.2s, background-color 0.2s;
+        }
+        a:hover {
+            color: #339933; /* Neutrálnější zelená */
+        }
+        .btn:hover {
+            background-color: #339933;
+            border-color: #339933;
+            color: #fff;
+        }
+        /* Centrování a zvětšení vyhledávacího pole */
+        .navbar-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+        }
+        .navbar-center .form-control {
+            width: 100%;
+        }
+        /* Oprava zarovnání tlačítka Odhlásit se */
+        .navbar-nav .nav-item .nav-link,
+        .navbar-nav .nav-item .btn {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        /* Obsah stránky */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        /* Dolní panel (footer) */
+        .footer {
+            background: linear-gradient(90deg, #000000, #004d00);
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+        }
+        /* Zprávy */
         .messages {
             list-style: none;
             padding: 0;
+            margin-bottom: 20px;
         }
         .messages li {
             padding: 10px;
@@ -32,23 +100,32 @@
             background-color: #d1ecf1;
             color: #0c5460;
         }
-        /* Styly pro vybranou kategorii */
+        /* Dropdown menu */
         .dropdown-menu a.active {
             font-weight: bold;
             text-decoration: underline;
         }
     </style>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-        <div class="container-fluid">
+    <!-- Horní navigační panel -->
+    <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+        <div class="container-fluid position-relative">
             <a class="navbar-brand" href="{% url 'home' %}">Storge</a>
+            <!-- Vyhledávací formulář uprostřed a zvětšený -->
+            <form class="d-flex navbar-center" method="get" action="{% url 'product_search' %}">
+                <input class="form-control me-2" type="search" name="query" placeholder="Hledat produkty" aria-label="Hledat" value="{{ request.GET.query }}">
+                <button class="btn btn-outline-light" type="submit">Hledat</button>
+            </form>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Přepnout navigaci">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Levá strana navigace -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Odkaz Domů -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Domů</a>
                     </li>
@@ -68,22 +145,28 @@
                             {% endfor %}
                         </ul>
                     </li>
+                </ul>
+                <!-- Pravá strana navigace -->
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <!-- Košík a Objednávky -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
+                    </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <span class="nav-link">Vítej, {{ user.username }}!</span>
-                        </li>
-                        <li class="nav-item">
-                            <form id="logout-form" action="{% url 'logout' %}" method="POST" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link" style="padding: 0;">Odhlásit se</button>
-                            </form>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">Profil</a>
-                        </li>
-                        <!-- Přidáme odkaz na objednávky -->
-                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'order_list' %}">Objednávky</a>
+                        </li>
+                    {% endif %}
+                    <!-- Uživatelské odkazy -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <form id="logout-form" action="{% url 'logout' %}" method="POST" class="d-flex align-items-center mb-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link p-0" style="color: #fff;">Odhlásit se</button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -93,18 +176,12 @@
                             <a class="nav-link" href="{% url 'register' %}">Zaregistrovat se</a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
-                    </li>
                 </ul>
-                <!-- Search Form -->
-                <form class="d-flex" method="get" action="{% url 'product_search' %}">
-                    {{ search_form.as_p }}
-                    <button class="btn btn-outline-success" type="submit">Hledat</button>
-                </form>
             </div>
         </div>
     </nav>
+
+    <!-- Zobrazení zpráv -->
     {% if messages %}
         <div class="container">
             <ul class="messages">
@@ -114,22 +191,31 @@
             </ul>
         </div>
     {% endif %}
-    <div class="container">
+
+    <!-- Hlavní obsah stránky -->
+    <div class="container content">
         {% block content %}
         {% endblock %}
     </div>
-    <!-- Bootstrap JS Bundle (includes Popper) -->
+
+    <!-- Dolní panel (footer) -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <p>&copy; {{ year }} Storge. Všechna práva vyhrazena.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle (včetně Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript pro aktivaci dropdownu na hover -->
     <script>
-        // Enable dropdown on hover
+        // Aktivace dropdownu na hover
         document.addEventListener("DOMContentLoaded", function(){
             var dropdowns = document.querySelectorAll('.nav-item.dropdown');
 
             dropdowns.forEach(function(dropdown){
                 dropdown.addEventListener('mouseover', function(){
                     var dropdownToggle = dropdown.querySelector('.dropdown-toggle');
-                    var dropdownMenu = dropdown.querySelector('.dropdown-menu');
                     var bsDropdown = new bootstrap.Dropdown(dropdownToggle);
                     bsDropdown.show();
                 });
