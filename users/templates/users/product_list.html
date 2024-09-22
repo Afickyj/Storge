@@ -4,110 +4,81 @@
     {% if current_category %}
         {{ current_category.name }}
     {% else %}
-        Seznam Produktů
+        Všechny produkty
     {% endif %}
 {% endblock %}
 
 {% block content %}
-    <!-- Titulek stránky -->
     <h2>
         {% if current_category %}
             {{ current_category.name }}
         {% else %}
-            Seznam Produktů
+            Všechny produkty
         {% endif %}
     </h2>
 
-    <!-- Filtrace podle kategorie - zobrazí se pouze, když není vybrána žádná kategorie -->
-    {% if not current_category %}
-        <div class="mb-4">
-            <h4>Kategorie</h4>
-            <ul class="list-inline">
-                <li class="list-inline-item">
-                    <a href="{% url 'product_list' %}" class="{% if not request.GET.category %}active{% endif %}">Vše</a>
-                </li>
-                {% for category in categories %}
-                    <li class="list-inline-item">
-                        <a href="?category={{ category.id }}" class="{% if request.GET.category == category.id|stringformat:"s" %}active{% endif %}">
-                            {{ category.name }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-
-    <!-- Seznam Produktů -->
-    <div class="row">
-        {% for product in products %}
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">{{ product.price }} Kč</p>
-                        <form action="{% url 'cart_add' product.id %}" method="post" class="mt-auto">
-                            {% csrf_token %}
-                            <div class="input-group">
-                                <input type="number" name="quantity" value="1" min="1" class="form-control">
-                                <button type="submit" class="btn btn-success">Přidat do Košíku</button>
-                            </div>
-                        </form>
-                        {% if perms.users.can_edit_product or perms.users.can_delete_product %}
-                            <div class="mt-2">
-                                {% if perms.users.can_edit_product %}
-                                    <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning btn-sm">Upravit</a>
-                                {% endif %}
-                                {% if perms.users.can_delete_product %}
-                                    <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm">Smazat</a>
-                                {% endif %}
-                            </div>
-                        {% endif %}
+    {% if products %}
+        <ul class="list-group mb-4">
+            {% for product in products %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                        <div>
+                            <strong>{{ product.name }}</strong><br>
+                            {{ product.price }} Kč
+                        </div>
                     </div>
-                </div>
-            </div>
-        {% empty %}
-            <p>Žádné produkty nebyly nalezeny.</p>
-        {% endfor %}
-    </div>
+                    <div>
+                        <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
+                            <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Žádné produkty nebyly nalezeny.</p>
+    {% endif %}
 
     <!-- Stránkování -->
     {% if products.has_other_pages %}
-        <nav aria-label="Navigace Stránek">
-            <ul class="pagination justify-content-center">
+        <nav aria-label="Navigace stránek">
+            <ul class="pagination">
                 {% if products.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ products.previous_page_number }}" aria-label="Předchozí">
+                        <a class="page-link" href="?{% if current_category %}category={{ current_category.id }}&amp;{% endif %}page={{ products.previous_page_number }}" aria-label="Předchozí">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Předchozí">
+                        <span class="page-link" aria-label="Předchozí">
                             <span aria-hidden="true">&laquo;</span>
-                        </a>
+                        </span>
                     </li>
                 {% endif %}
-
                 {% for num in products.paginator.page_range %}
                     {% if products.number == num %}
-                        <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                     {% else %}
-                        <li class="page-item"><a class="page-link" href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if current_category %}category={{ current_category.id }}&amp;{% endif %}page={{ num }}">{{ num }}</a>
+                        </li>
                     {% endif %}
                 {% endfor %}
-
                 {% if products.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ products.next_page_number }}" aria-label="Další">
+                        <a class="page-link" href="?{% if current_category %}category={{ current_category.id }}&amp;{% endif %}page={{ products.next_page_number }}" aria-label="Další">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Další">
+                        <span class="page-link" aria-label="Další">
                             <span aria-hidden="true">&raquo;</span>
-                        </a>
+                        </span>
                     </li>
                 {% endif %}
             </ul>
