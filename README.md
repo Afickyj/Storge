@@ -21,4 +21,4 @@
 - [x] Přehled objednávek uživatele (pro uživatele i administrátora)
 - [x] Editace uživatelského účtu (údaje)
 - [x] Přidání autora do administrátorského panelu
-- [ ] Estetické a funkční požadavky
+- [x] Estetické a funkční požadavky
