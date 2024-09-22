@@ -1,11 +1,11 @@
 # TODO Checklist pro Store Project
 
 ### Administrátor:
-- [ ] Přidávání kategorií produktů
+- [x] Přidávání kategorií produktů
 - [ ] Přehled stromu kategorií s vyhledáváním a možností přemisťování kategorií
-- [ ] Přidávání produktů (název, popis, URL obrázku, dostupnost, cena, produktový typ, kategorie, autor)
+- [x] Přidávání produktů (název, popis, URL obrázku, dostupnost, cena, produktový typ, kategorie, autor)
 - [x] Seznam produktů s AJAX stránkováním, tříděním a vyhledáváním
-- [ ] Tlačítko pro editaci produktu
+- [x] Tlačítko pro editaci produktu
 
 ### Uživatel:
 - [x] Registrace uživatele
