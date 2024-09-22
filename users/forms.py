@@ -30,3 +30,7 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['city', 'address', 'avatar', 'role', 'communication_channel']
+
+
+class ProductSearchForm(forms.Form):
+    query = forms.CharField(max_length=100, label='Search for products')

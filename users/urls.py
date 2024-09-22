@@ -12,4 +12,5 @@ urlpatterns = [
     path('profile/update/', views.profile_update, name='profile-update'),
     path('categories/', views.category_list, name='category_list'),
     path('', views.home, name='home'),  # Root URL mapped to 'home' view in 'users' app
+    path('search/', views.product_search, name='product_search'),
 ]

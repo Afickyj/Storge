@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProductSearchForm
 from .models import Category, Product
 from django.conf import settings
 
@@ -58,6 +58,31 @@ def home(request):
     print("Database NAME in view:", settings.DATABASES['default']['NAME'])
     categories = Category.objects.all()
     products = Product.objects.all()
+    search_form = ProductSearchForm()  # Vytvoření instance formuláře
     print("Categories in view:", categories)
     print("Products in view:", products)
-    return render(request, 'users/home.html', {'categories': categories, 'products': products})
+    return render(request, 'users/home.html', {
+        'categories': categories,
+        'products': products,
+        'search_form': search_form  # Přidání formuláře do kontextu
+    })
+
+def product_search(request):
+    form = ProductSearchForm()
+    results = []
+
+    print("Accessing product_search view")  # Ladicí výpis
+
+    if 'query' in request.GET:
+        form = ProductSearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Product.objects.filter(name__icontains=query) | Product.objects.filter(
+                description__icontains=query)
+            print(f"Search query: {query}, results found: {results.count()}")  # Ladicí výpis
+        else:
+            print("Form is not valid")  # Ladicí výpis
+    else:
+        print("No query parameter in GET request")  # Ladicí výpis
+
+    return render(request, 'users/product_search.html', {'form': form, 'results': results})

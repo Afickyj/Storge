@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Available Products</h2>
+<h1>Vítejte ve Storge</h1>
+
+<!-- Search Form -->
+<div class="search-form">
+    <form method="get" action="{% url 'product_search' %}">
+        {{ search_form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<h2>Aktuální trendy</h2>
 
 {% for category in categories %}
     <h3>{{ category.name }}</h3>
