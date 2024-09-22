@@ -15,7 +15,7 @@
 - [x] Vyhledávání produktů
 - [x] Ajax stránkování a třídění produktů
 - [ ] Přidání produktu do košíku
-- [ ] Košík s možností objednání produktů
+- [x] Košík s možností objednání produktů
 
 ### Další úkoly:
 - [ ] Přehled objednávek uživatele (pro uživatele i administrátora)
