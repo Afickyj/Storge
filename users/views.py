@@ -19,6 +19,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseForbidden
 
+
 # Registrace uživatele
 def register(request):
     if request.method == 'POST':
@@ -32,10 +33,12 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
+
 # Profilová stránka
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
+
 
 @login_required
 def profile_update(request):
@@ -59,10 +62,12 @@ def profile_update(request):
 
     return render(request, 'users/profile_update.html', context)
 
+
 def category_list(request):
     categories = Category.objects.all()
     print("Načtené kategorie:", categories)  # Ladicí výpis
     return render(request, 'users/category_list.html', {'categories': categories})
+
 
 def home(request):
     print("Database NAME in view:", settings.DATABASES['default']['NAME'])
@@ -76,6 +81,7 @@ def home(request):
         'products': products,
         'search_form': search_form  # Přidání formuláře do kontextu
     })
+
 
 def product_search(request):
     form = ProductSearchForm()
@@ -96,6 +102,7 @@ def product_search(request):
         print("No query parameter in GET request")  # Ladicí výpis
 
     return render(request, 'users/product_search.html', {'form': form, 'results': results})
+
 
 def product_list(request):
     """
@@ -121,6 +128,7 @@ def product_list(request):
     }
     return render(request, 'users/product_list.html', context)
 
+
 @require_POST
 def cart_add(request, product_id):
     cart = Cart(request)
@@ -128,6 +136,7 @@ def cart_add(request, product_id):
     form_quantity = int(request.POST.get('quantity', 1))
     cart.add(product=product, quantity=form_quantity, update_quantity=False)
     return redirect('cart_detail')
+
 
 @require_POST
 def cart_update(request, product_id):
@@ -137,6 +146,7 @@ def cart_update(request, product_id):
     cart.add(product=product, quantity=quantity, update_quantity=True)
     return redirect('cart_detail')
 
+
 @require_POST
 def cart_remove(request, product_id):
     cart = Cart(request)
@@ -144,9 +154,11 @@ def cart_remove(request, product_id):
     cart.remove(product)
     return redirect('cart_detail')
 
+
 def cart_detail(request):
     cart = Cart(request)
     return render(request, 'users/cart_detail.html', {'cart': cart})
+
 
 class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     model = Product
@@ -155,11 +167,13 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_edit_product'
 
+
 class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     model = Product
     template_name = 'users/product_confirm_delete.html'
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_delete_product'
+
 
 @login_required
 def order_create(request):
@@ -188,6 +202,7 @@ def order_create(request):
         form = OrderCreateForm()
     return render(request, 'users/order_create.html', {'cart': cart, 'form': form})
 
+
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -195,6 +210,7 @@ def order_detail(request, order_id):
     if order.user != request.user and not request.user.is_staff:
         return HttpResponseForbidden("Nemáte oprávnění zobrazit tuto objednávku.")
     return render(request, 'users/order_detail.html', {'order': order})
+
 
 @login_required
 def order_list(request):

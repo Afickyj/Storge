@@ -1,14 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}Vytvoření objednávky{% endblock %}
+{% block title %}Vytvoření Objednávky{% endblock %}
 
 {% block content %}
-    <h2>Vytvoření objednávky</h2>
+    <h2>Vytvořit objednávku</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Objednat</button>
+        <div class="mb-3">
+            {{ form.address.label_tag }}<br>
+            {{ form.address }}
+        </div>
+        <div class="mb-3">
+            {{ form.delivery_method.label_tag }}<br>
+            {{ form.delivery_method }}
+        </div>
+        <div class="mb-3">
+            {{ form.payment_method.label_tag }}<br>
+            {{ form.payment_method }}
+        </div>
+        <button type="submit" class="btn btn-primary">Odeslat objednávku</button>
     </form>
-    <h3>Váš košík</h3>
-    {% include 'users/cart_detail.html' %}
+    <h3>Obsah Košíku</h3>
+    <ul>
+        {% for item in cart %}
+            <li>{{ item.product.name }} - {{ item.quantity }} ks</li>
+        {% endfor %}
+    </ul>
+    <h4>Celková cena: {{ cart.get_total_price }} Kč</h4>
 {% endblock %}

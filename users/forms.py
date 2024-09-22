@@ -41,7 +41,18 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['name', 'description', 'price', 'image_url', 'category', 'availability', 'author', 'image']
 
+
 class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = []
+        fields = ['address', 'delivery_method', 'payment_method']
+        widgets = {
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Vaše adresa'}),
+            'delivery_method': forms.RadioSelect(),
+            'payment_method': forms.RadioSelect(),
+        }
+        labels = {
+            'address': 'Adresa',
+            'delivery_method': 'Způsob dopravy',
+            'payment_method': 'Způsob platby',
+        }
