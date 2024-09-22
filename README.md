@@ -14,7 +14,7 @@
 - [ ] Seznam produktů (mřížka nebo seznam)
 - [x] Vyhledávání produktů
 - [x] Ajax stránkování a třídění produktů
-- [ ] Přidání produktu do košíku
+- [x] Přidání produktu do košíku
 - [x] Košík s možností objednání produktů
 
 ### Další úkoly:
