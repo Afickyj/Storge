@@ -1,11 +1,12 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProductSearchForm
 from .models import Category, Product
 from django.conf import settings
 from .cart import Cart
 from django.views.decorators.http import require_POST
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 # Registrace uživatele
@@ -90,6 +91,28 @@ def product_search(request):
 
     return render(request, 'users/product_search.html', {'form': form, 'results': results})
 
+def product_list(request):
+    """
+    View pro zobrazení seznamu produktů jako mřížka nebo seznam.
+    """
+    products = Product.objects.all()
+    categories = Category.objects.all()
+
+    # Filtrace podle kategorie (volitelné)
+    category_id = request.GET.get('category')
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    # Stránkování (volitelné)
+    paginator = Paginator(products, 12)  # 12 produktů na stránku
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'products': page_obj,
+        'categories': categories,
+    }
+    return render(request, 'users/product_list.html', context)
 
 @require_POST
 def cart_add(request, product_id):

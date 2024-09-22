@@ -9,6 +9,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/update/', views.profile_update, name='profile-update'),
     path('categories/', views.category_list, name='category_list'),
+    path('products/', views.product_list, name='product_list'),  # Nová cesta pro seznam produktů
     path('', views.home, name='home'),
     path('search/', views.product_search, name='product_search'),
 

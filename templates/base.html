@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Storge{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Základní stylování pro lepší vzhled */
         body {
@@ -38,36 +40,63 @@
             background-color: #d1ecf1;
             color: #0c5460;
         }
+        /* Styly pro vybranou kategorii */
+        .list-inline-item a.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="{% url 'home' %}">Domů</a>
-        {% if user.is_authenticated %}
-            <span>Vítej, {{ user.username }}!</span>
-
-            <!-- Přidání POST formuláře pro odhlášení -->
-            <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:#333; text-decoration: underline; cursor:pointer;">Odhlásit se</button>
-            </form>
-
-            <a href="{% url 'profile' %}">Profil</a>
-        {% else %}
-            <a href="{% url 'login' %}">Přihlásit se</a>
-            <a href="{% url 'register' %}">Zaregistrovat se</a>
-        {% endif %}
-        <!-- Přidání odkazu na košík -->
-        <a href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">Storge</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Domů</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><span class="nav-link">Vítej, {{ user.username }}!</span></li>
+                        <li class="nav-item">
+                            <form id="logout-form" action="{% url 'logout' %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link" style="padding: 0;">Odhlásit se</button>
+                            </form>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profil</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Přihlásit se</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Zaregistrovat se</a></li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
+                    </li>
+                </ul>
+                <!-- Search Form -->
+                <form class="d-flex" method="get" action="{% url 'product_search' %}">
+                    {{ search_form.as_p }}
+                    <button class="btn btn-outline-success" type="submit">Hledat</button>
+                </form>
+            </div>
+        </div>
     </nav>
     {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
+        <div class="container">
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
-    {% block content %}
-    {% endblock %}
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
