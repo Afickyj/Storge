@@ -53,10 +53,14 @@
                                 <button type="submit" class="btn btn-success">Přidat do Košíku</button>
                             </div>
                         </form>
-                        {% if request.user.is_superuser %}
+                        {% if perms.users.can_edit_product or perms.users.can_delete_product %}
                             <div class="mt-2">
-                                <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning btn-sm">Upravit</a>
-                                <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm">Smazat</a>
+                                {% if perms.users.can_edit_product %}
+                                    <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning btn-sm">Upravit</a>
+                                {% endif %}
+                                {% if perms.users.can_delete_product %}
+                                    <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm">Smazat</a>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>

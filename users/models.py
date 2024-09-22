@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Profile(models.Model):
     ROLE_CHOICES = [
         ('ADMINISTRATOR', 'Administrator'),
@@ -22,6 +23,7 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username} Profile'
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     parent_category = models.ForeignKey(
@@ -37,6 +39,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -60,3 +63,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('product_detail', args=[self.id])
+
+    class Meta:
+        permissions = [
+            ("can_edit_product", "Can edit product"),
+            ("can_delete_product", "Can delete product"),
+        ]

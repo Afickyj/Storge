@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 # Registrace uživatele
@@ -153,20 +154,22 @@ def cart_detail(request):
     return render(request, 'users/cart_detail.html', {'cart': cart})
 
 
-class ProductUpdateView(UserPassesTestMixin, UpdateView):
+class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'users/product_edit.html'  # Vytvoříme tuto šablonu
-    success_url = reverse_lazy('product_list')  # Přesměrování po úspěšném upravení
+    template_name = 'users/product_edit.html'
+    success_url = reverse_lazy('product_list')
+    permission_required = 'users.can_edit_product'
 
     def test_func(self):
         return self.request.user.is_superuser  # Ověření, že uživatel je superuživatel
 
 
-class ProductDeleteView(UserPassesTestMixin, DeleteView):
+class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     model = Product
-    template_name = 'users/product_confirm_delete.html'  # Vytvoříme tuto šablonu
-    success_url = reverse_lazy('product_list')  # Přesměrování po úspěšném smazání
+    template_name = 'users/product_confirm_delete.html'
+    success_url = reverse_lazy('product_list')
+    permission_required = 'users.can_delete_product'
 
     def test_func(self):
         return self.request.user.is_superuser  # Ověření, že uživatel je superuživatel
