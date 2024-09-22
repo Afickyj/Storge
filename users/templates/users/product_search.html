@@ -1,73 +1,65 @@
 {% extends 'base.html' %}
 
-{% block title %}Výsledky vyhledávání{% endblock %}
+{% block title %}
+    Vyhledávání produktů
+{% endblock %}
 
 {% block content %}
-    <h2>Výsledky vyhledávání</h2>
+    <h2>Vyhledávání produktů</h2>
 
-    {% if results %}
-        <ul class="list-group mb-4">
-            {% for product in results %}
-                <li class="list-group-item d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
-                        <div>
-                            <strong>{{ product.name }}</strong><br>
-                            {{ product.price }} Kč
-                        </div>
-                    </div>
-                    <div>
-                        <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
-                            {% csrf_token %}
-                            <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
-                            <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
-                        </form>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+    <!-- Odstraněn vyhledávací formulář -->
 
-        <!-- Stránkování -->
-        {% if results.has_other_pages %}
-            <nav aria-label="Navigace stránek">
-                <ul class="pagination">
-                    {% if results.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ results.previous_page_number }}" aria-label="Předchozí">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link" aria-label="Předchozí">
-                                <span aria-hidden="true">&laquo;</span>
-                            </span>
-                        </li>
-                    {% endif %}
-                    {% for num in results.paginator.page_range %}
-                        {% if results.number == num %}
-                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ num }}">{{ num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                    {% if results.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?query={{ request.GET.query }}&amp;page={{ results.next_page_number }}" aria-label="Další">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link" aria-label="Další">
-                                <span aria-hidden="true">&raquo;</span>
-                            </span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    {% else %}
-        <p>Žádné produkty nebyly nalezeny pro vaši vyhledávací frázi.</p>
-    {% endif %}
+    <!-- Sekce s produkty a stránkováním -->
+    <div id="product-container">
+        {% include 'users/product_list_partial.html' %}
+    </div>
+
+    <!-- JavaScript pro AJAX -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function loadContent(url, method='GET', data=null) {
+                return fetch(url, {
+                    method: method,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: data
+                }).then(response => response.text());
+            }
+
+            // Zachytávání odeslání vyhledávacího formuláře
+            const searchForm = document.getElementById('search-form');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(searchForm);
+                    const queryParams = new URLSearchParams(formData).toString();
+                    const url = searchForm.action + '?' + queryParams;
+                    loadContent(url).then(html => {
+                        document.getElementById('product-container').innerHTML = html;
+                        window.history.pushState(null, '', url);
+                    });
+                });
+            }
+
+            // Delegace událostí pro stránkovací odkazy
+            document.getElementById('product-container').addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && e.target.closest('.pagination')) {
+                    e.preventécut();
+                    const url = e.target.href;
+                    loadContent(url).then(html => {
+                        document.getElementById('product-container').innerHTML = html;
+                        window.history.pushState(null, '', url);
+                    });
+                }
+            });
+
+            window.addEventListener('popstate', function(e) {
+                loadContent(window.location.href).then(html => {
+                    document.getElementById('product-container').innerHTML = html;
+                });
+            });
+        });
+    </script>
 {% endblock %}

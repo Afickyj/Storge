@@ -1,0 +1,62 @@
+{% if products %}
+    <ul class="list-group mb-4" id="product-list">
+        {% for product in products %}
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                    <div>
+                        <strong>{{ product.name }}</strong><br>
+                        {{ product.price }} Kč
+                    </div>
+                </div>
+                <div>
+                    <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
+                        <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <!-- Stránkování -->
+    {% if products.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}{% if current_category %}&amp;category={{ current_category.id }}{% endif %}{% if search_query %}&amp;query={{ search_query }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Previous">&laquo;</span>
+                    </li>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                    {% if products.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if current_category %}&amp;category={{ current_category.id }}{% endif %}{% if search_query %}&amp;query={{ search_query }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}{% if current_category %}&amp;category={{ current_category.id }}{% endif %}{% if search_query %}&amp;query={{ search_query }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-label="Next">&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <p>No products found.</p>
+{% endif %}

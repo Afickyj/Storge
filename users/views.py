@@ -5,9 +5,9 @@ from .forms import (
     ProfileUpdateForm,
     ProductSearchForm,
     ProductForm,
-    OrderCreateForm  # Přidáno
+    OrderCreateForm
 )
-from .models import Category, Product, Order, OrderItem  # Přidáno Order a OrderItem
+from .models import Category, Product, Order, OrderItem
 from django.conf import settings
 from .cart import Cart
 from django.views.decorators.http import require_POST
@@ -18,7 +18,6 @@ from django.views.generic import UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseForbidden
-
 
 # Registrace uživatele
 def register(request):
@@ -33,12 +32,10 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
-
 # Profilová stránka
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
-
 
 @login_required
 def profile_update(request):
@@ -62,12 +59,10 @@ def profile_update(request):
 
     return render(request, 'users/profile_update.html', context)
 
-
 def category_list(request):
     categories = Category.objects.all()
     print("Načtené kategorie:", categories)  # Ladicí výpis
     return render(request, 'users/category_list.html', {'categories': categories})
-
 
 def home(request):
     print("Database NAME in view:", settings.DATABASES['default']['NAME'])
@@ -82,52 +77,74 @@ def home(request):
         'search_form': search_form  # Přidání formuláře do kontextu
     })
 
-
-def product_search(request):
-    form = ProductSearchForm()
-    results = []
-
-    print("Accessing product_search view")  # Ladicí výpis
-
-    if 'query' in request.GET:
-        form = ProductSearchForm(request.GET)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            results = Product.objects.filter(name__icontains=query) | Product.objects.filter(
-                description__icontains=query)
-            print(f"Search query: {query}, results found: {results.count()}")  # Ladicí výpis
-        else:
-            print("Form is not valid")  # Ladicí výpis
-    else:
-        print("No query parameter in GET request")  # Ladicí výpis
-
-    return render(request, 'users/product_search.html', {'form': form, 'results': results})
-
-
 def product_list(request):
     """
-    View pro zobrazení seznamu produktů jako mřížka nebo seznam.
+    View pro zobrazení seznamu produktů jako mřížka nebo seznam s AJAX stránkováním.
     """
     products = Product.objects.all()
     categories = Category.objects.all()
 
+    # Zpracování filtru kategorie
     category_id = request.GET.get('category')
     current_category = None
     if category_id:
         current_category = get_object_or_404(Category, id=category_id)
         products = products.filter(category_id=category_id)
 
-    paginator = Paginator(products.order_by('id'), 12)  # Přidáno order_by pro eliminaci varování
+    # Zpracování vyhledávání
+    search_query = request.GET.get('query', '')
+    if search_query:
+        products = products.filter(name__icontains=search_query) | products.filter(description__icontains=search_query)
+
+    paginator = Paginator(products.order_by('id'), 12)  # Počet produktů na stránku
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
         'products': page_obj,
         'categories': categories,
-        'current_category': current_category,  # Přidání aktuální kategorie do kontextu
+        'current_category': current_category,
+        'search_query': search_query
     }
-    return render(request, 'users/product_list.html', context)
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'users/product_list_partial.html', context)
+    else:
+        return render(request, 'users/product_list.html', context)
+
+def product_search(request):
+    """
+    View pro vyhledávání produktů s AJAX podporou.
+    """
+    form = ProductSearchForm()
+    results = Product.objects.all()
+
+    # Zpracování filtru kategorie
+    category_id = request.GET.get('category')
+    current_category = None
+    if category_id:
+        current_category = get_object_or_404(Category, id=category_id)
+        results = results.filter(category_id=category_id)
+
+    # Zpracování vyhledávání
+    search_query = request.GET.get('query', '')
+    if search_query:
+        results = results.filter(name__icontains=search_query) | results.filter(description__icontains=search_query)
+
+    paginator = Paginator(results.order_by('id'), 12)  # Počet produktů na stránku
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'products': page_obj,
+        'search_query': search_query,
+        'current_category': current_category,
+    }
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'users/product_list_partial.html', context)
+    else:
+        return render(request, 'users/product_search.html', context)
 
 @require_POST
 def cart_add(request, product_id):
@@ -137,7 +154,6 @@ def cart_add(request, product_id):
     cart.add(product=product, quantity=form_quantity, update_quantity=False)
     return redirect('cart_detail')
 
-
 @require_POST
 def cart_update(request, product_id):
     cart = Cart(request)
@@ -146,7 +162,6 @@ def cart_update(request, product_id):
     cart.add(product=product, quantity=quantity, update_quantity=True)
     return redirect('cart_detail')
 
-
 @require_POST
 def cart_remove(request, product_id):
     cart = Cart(request)
@@ -154,11 +169,9 @@ def cart_remove(request, product_id):
     cart.remove(product)
     return redirect('cart_detail')
 
-
 def cart_detail(request):
     cart = Cart(request)
     return render(request, 'users/cart_detail.html', {'cart': cart})
-
 
 class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     model = Product
@@ -167,13 +180,11 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_edit_product'
 
-
 class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     model = Product
     template_name = 'users/product_confirm_delete.html'
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_delete_product'
-
 
 @login_required
 def order_create(request):
@@ -202,7 +213,6 @@ def order_create(request):
         form = OrderCreateForm()
     return render(request, 'users/order_create.html', {'cart': cart, 'form': form})
 
-
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -211,7 +221,6 @@ def order_detail(request, order_id):
         return HttpResponseForbidden("Nemáte oprávnění zobrazit tuto objednávku.")
     return render(request, 'users/order_detail.html', {'order': order})
 
-
 @login_required
 def order_list(request):
     if request.user.is_staff:
@@ -219,7 +228,6 @@ def order_list(request):
     else:
         orders = Order.objects.filter(user=request.user)
     return render(request, 'users/order_list.html', {'orders': orders})
-
 
 # Přehled stromu kategorií
 def category_tree(request):
@@ -237,7 +245,6 @@ def category_tree(request):
         'query': query
     }
     return render(request, 'users/category_tree.html', context)
-
 
 # Přemístění kategorie
 def move_category(request, category_id):
