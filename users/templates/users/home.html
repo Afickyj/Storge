@@ -1,33 +1,37 @@
 {% extends 'base.html' %}
 
+{% block title %}Home{% endblock %}
+
 {% block content %}
-<h1>Vítejte ve Storge</h1>
+    <h2>Available Products</h2>
 
-<!-- Search Form -->
-<div class="search-form">
-    <form method="get" action="{% url 'product_search' %}">
-        {{ search_form.as_p }}
-        <button type="submit">Search</button>
-    </form>
-</div>
-
-<h2>Aktuální trendy</h2>
-
-{% for category in categories %}
-    <h3>{{ category.name }}</h3>
-    {% if category.products.all %}
-        <ul>
-            {% for product in category.products.all %}
-                <li>
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:200px; max-height:200px;">
-                    {{ product.name }} - {{ product.price }} USD
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No products in this category.</p>
-    {% endif %}
-{% empty %}
-    <p>No categories found.</p>
-{% endfor %}
+    {% for category in categories %}
+        <h3>{{ category.name }}</h3>
+        {% if category.products.all %}
+            <ul class="list-group mb-4">
+                {% for product in category.products.all %}
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                            <div>
+                                <strong>{{ product.name }}</strong><br>
+                                ${{ product.price }} USD
+                            </div>
+                        </div>
+                        <div>
+                            <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
+                                <button type="submit" class="btn btn-success btn-sm">Add to Cart</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No products in this category.</p>
+        {% endif %}
+    {% empty %}
+        <p>No categories found.</p>
+    {% endfor %}
 {% endblock %}

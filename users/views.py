@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProductSearchForm
 from .models import Category, Product
 from django.conf import settings
+from .cart import Cart
+from django.views.decorators.http import require_POST
 
 
 # Registrace uživatele
@@ -67,6 +69,7 @@ def home(request):
         'search_form': search_form  # Přidání formuláře do kontextu
     })
 
+
 def product_search(request):
     form = ProductSearchForm()
     results = []
@@ -86,3 +89,34 @@ def product_search(request):
         print("No query parameter in GET request")  # Ladicí výpis
 
     return render(request, 'users/product_search.html', {'form': form, 'results': results})
+
+
+@require_POST
+def cart_add(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    form_quantity = int(request.POST.get('quantity', 1))
+    cart.add(product=product, quantity=form_quantity, update_quantity=False)
+    return redirect('cart_detail')
+
+
+@require_POST
+def cart_update(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    quantity = int(request.POST.get('quantity', 1))
+    cart.add(product=product, quantity=quantity, update_quantity=True)
+    return redirect('cart_detail')
+
+
+@require_POST
+def cart_remove(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart.remove(product)
+    return redirect('cart_detail')
+
+
+def cart_detail(request):
+    cart = Cart(request)
+    return render(request, 'users/cart_detail.html', {'cart': cart})

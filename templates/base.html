@@ -57,6 +57,8 @@
             <a href="{% url 'login' %}">Přihlásit se</a>
             <a href="{% url 'register' %}">Zaregistrovat se</a>
         {% endif %}
+        <!-- Přidání odkazu na košík -->
+        <a href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
     </nav>
     {% if messages %}
         <ul class="messages">
