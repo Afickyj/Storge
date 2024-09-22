@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Upravit Produkt</h2>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Uložit změny</button>
-    <a href="{% url 'product_list' %}" class="btn btn-secondary">Zrušit</a>
-  </form>
+    <h2>Upravit Produkt</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Uložit změny</button>
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">Zrušit</a>
+    </form>
 {% endblock %}

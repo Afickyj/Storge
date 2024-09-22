@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Shopping Cart{% endblock %}
+{% block title %}Nákupní Košík{% endblock %}
 
 {% block content %}
-    <h2>Your Shopping Cart</h2>
+    <h2>Váš Nákupní Košík</h2>
     {% if cart %}
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Price (USD)</th>
-                    <th>Quantity</th>
-                    <th>Total (USD)</th>
-                    <th>Actions</th>
+                    <th>Produkt</th>
+                    <th>Cena (CZK)</th>
+                    <th>Množství</th>
+                    <th>Celkem (CZK)</th>
+                    <th>Akce</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,29 +22,29 @@
                             <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
                             {{ item.product.name }}
                         </td>
-                        <td>${{ item.price }}</td>
+                        <td>{{ item.price }} Kč</td>
                         <td>
                             <form action="{% url 'cart_update' item.product.id %}" method="post">
                                 {% csrf_token %}
                                 <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control" style="width:80px;">
-                                <button type="submit" class="btn btn-sm btn-primary mt-2">Update</button>
+                                <button type="submit" class="btn btn-sm btn-primary mt-2">Aktualizovat</button>
                             </form>
                         </td>
-                        <td>${{ item.total_price }}</td>
+                        <td>{{ item.total_price }} Kč</td>
                         <td>
                             <form action="{% url 'cart_remove' item.product.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Odstranit</button>
                             </form>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <h3>Total: ${{ cart.get_total_price }}</h3>
-        <!-- Můžeš přidat tlačítko pro checkout -->
-        <a href="#" class="btn btn-success">Proceed to Checkout</a>
+        <h3>Celkem: {{ cart.get_total_price }} Kč</h3>
+        <!-- Můžeš přidat tlačítko pro dokončení objednávky -->
+        <a href="#" class="btn btn-success">Pokračovat k objednávce</a>
     {% else %}
-        <p>Your cart is empty.</p>
+        <p>Váš košík je prázdný.</p>
     {% endif %}
 {% endblock %}

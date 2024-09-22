@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Product Search</title>
+    <title>Vyhledávání Produktů</title>
 </head>
 <body>
-    <h1>Search Products</h1>
-    <form method="get" action="{% url 'product_search' %}">
+    <h1>Vyhledávání Produktů</h1>
+    <form method="get" action="{% url 'Vyhledat produkty' %}">
         {{ form.as_p }}
-        <button type="submit">Search</button>
+        <button type="submit">Vyhledat</button>
     </form>
 
-    <h2>Results</h2>
+    <h2>Výsledky</h2>
     <ul>
         {% for product in results %}
             <li>{{ product.name }} - {{ product.description }}</li>
         {% empty %}
-            <li>No products found.</li>
+            <li>Žádné produkty nebyly nalezeny.</li>
         {% endfor %}
     </ul>
 </body>

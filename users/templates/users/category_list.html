@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Category List</h2>
+    <h2>Seznam Kategorií</h2>
 
-<ul>
-    {% for category in categories %}
-        <li>{{ category.name }}</li>
-        {% if category.subcategories.all %}
-            <ul>
-                {% for subcategory in category.subcategories.all %}
-                    <li>{{ subcategory.name }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endfor %}
-</ul>
+    <ul>
+        {% for category in categories %}
+            <li>{{ category.name }}</li>
+            {% if category.subcategories.all %}
+                <ul>
+                    {% for subcategory in category.subcategories.all %}
+                        <li>{{ subcategory.name }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    </ul>
 {% endblock %}

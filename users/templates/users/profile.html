@@ -3,13 +3,13 @@
 {% block title %}Profil{% endblock %}
 
 {% block content %}
-    <h2>Tvůj profil</h2>
+    <h2>Tvůj Profil</h2>
     <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="avatar">
     <p>Uživatelské jméno: {{ user.username }}</p>
     <p>Email: {{ user.email }}</p>
     <p>Město: {{ user.profile.city }}</p>
     <p>Adresa: {{ user.profile.address }}</p>
     <p>Role: {{ user.profile.get_role_display }}</p>
-    <p>Komunikační kanál: {{ user.profile.get_communication_channel_display }}</p>
-    <p><a href="{% url 'profile-update' %}">Aktualizovat profil</a></p>  <!-- Přidán odkaz -->
+    <p>Komunikační Kanál: {{ user.profile.get_communication_channel_display }}</p>
+    <p><a href="{% url 'profile-update' %}">Aktualizovat Profil</a></p>
 {% endblock %}

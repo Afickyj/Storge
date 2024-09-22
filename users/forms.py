@@ -33,7 +33,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 class ProductSearchForm(forms.Form):
-    query = forms.CharField(max_length=100, label='Search for products')
+    query = forms.CharField(max_length=100, label='Vyhledat produkty')
 
 
 class ProductForm(forms.ModelForm):

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Smazat Produkt</h2>
-  <p>Opravdu chceš smazat produkt "{{ object.name }}"?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Ano, smazat</button>
-    <a href="{% url 'product_list' %}" class="btn btn-secondary">Zrušit</a>
-  </form>
+    <h2>Smazat Produkt</h2>
+    <p>Opravdu chcete smazat produkt "{{ object.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Ano, smazat</button>
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">Zrušit</a>
+    </form>
 {% endblock %}
