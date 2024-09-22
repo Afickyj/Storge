@@ -1,0 +1,9 @@
+<ul>
+    {% for subcategory in category.subcategories.all %}
+        <li>
+            {{ subcategory.name }}
+            <a href="{% url 'move_category' subcategory.id %}" class="btn btn-link">Přesunout</a>
+            {% include 'users/partials/category_subtree.html' with category=subcategory %}
+        </li>
+    {% endfor %}
+</ul>

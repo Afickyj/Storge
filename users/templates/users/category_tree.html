@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Strom kategorií</h1>
+
+    <form method="GET" class="mb-3">
+        <input type="text" name="q" placeholder="Hledat kategorie" value="{{ query }}" class="form-control">
+        <button type="submit" class="btn btn-primary mt-2">Hledat</button>
+    </form>
+
+    <ul>
+        {% for category in parent_categories %}
+            <li>
+                <strong>{{ category.name }}</strong>
+                <a href="{% url 'move_category' category.id %}" class="btn btn-link">Přesunout</a>
+                {% include 'users/partials/category_subtree.html' with category=category %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

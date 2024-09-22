@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Přesunout kategorii: {{ category.name }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="parent_category">Rodičovská kategorie:</label>
+            <select name="parent_category" class="form-control">
+                <option value="">Bez rodičovské kategorie</option>
+                {% for parent in parent_categories %}
+                    <option value="{{ parent.id }}" {% if category.parent_category == parent %}selected{% endif %}>
+                        {{ parent.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Přesunout</button>
+    </form>
+</div>
+{% endblock %}

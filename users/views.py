@@ -219,3 +219,39 @@ def order_list(request):
     else:
         orders = Order.objects.filter(user=request.user)
     return render(request, 'users/order_list.html', {'orders': orders})
+
+
+# Přehled stromu kategorií
+def category_tree(request):
+    query = request.GET.get('q')
+    if query:
+        categories = Category.objects.filter(name__icontains=query)
+    else:
+        categories = Category.objects.all()
+
+    parent_categories = Category.objects.filter(parent_category__isnull=True)
+
+    context = {
+        'categories': categories,
+        'parent_categories': parent_categories,
+        'query': query
+    }
+    return render(request, 'users/category_tree.html', context)
+
+
+# Přemístění kategorie
+def move_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+
+    if request.method == 'POST':
+        new_parent_id = request.POST.get('parent_category')
+        if new_parent_id:
+            new_parent = get_object_or_404(Category, id=new_parent_id)
+            category.parent_category = new_parent
+        else:
+            category.parent_category = None
+        category.save()
+        return redirect('category_tree')
+
+    parent_categories = Category.objects.filter(parent_category__isnull=True).exclude(id=category_id)
+    return render(request, 'users/move_category.html', {'category': category, 'parent_categories': parent_categories})

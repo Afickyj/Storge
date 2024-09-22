@@ -2,7 +2,7 @@
 
 ### Administrátor:
 - [x] Přidávání kategorií produktů
-- [ ] Přehled stromu kategorií s vyhledáváním a možností přemisťování kategorií
+- [x] Přehled stromu kategorií s vyhledáváním a možností přemisťování kategorií
 - [x] Přidávání produktů (název, popis, URL obrázku, dostupnost, cena, produktový typ, kategorie, autor)
 - [x] Seznam produktů s AJAX stránkováním, tříděním a vyhledáváním
 - [x] Tlačítko pro editaci produktu
