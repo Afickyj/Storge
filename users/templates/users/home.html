@@ -5,6 +5,19 @@
 {% block content %}
     <h2>Aktuálně Populární</h2>
 
+    <!-- Formulář pro zadání města -->
+    <div class="mt-4">
+        <form id="location-form" class="d-flex">
+            <input type="text" id="city-input" class="form-control me-2" placeholder="Zadejte své město">
+            <button type="submit" class="btn btn-primary">Zobrazit počasí</button>
+        </form>
+    </div>
+
+    <!-- Widget počasí -->
+    <div id="weather-widget" class="mt-4">
+        <p>Zadejte své město pro zobrazení počasí.</p>
+    </div>
+
     {% for category in categories %}
         <h3>{{ category.name }}</h3>
         {% if category.products.all %}
@@ -34,4 +47,52 @@
     {% empty %}
         <p>Žádné kategorie nebyly nalezeny.</p>
     {% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.getElementById('location-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var city = document.getElementById('city-input').value;
+            if (city) {
+                getCoordinates(city);
+            } else {
+                document.getElementById('weather-widget').innerHTML = "<p>Zadejte platné město.</p>";
+            }
+        });
+
+        function getCoordinates(city) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var latitude = data[0].lat;
+                        var longitude = data[0].lon;
+                        getWeather(latitude, longitude, city);
+                    } else {
+                        document.getElementById('weather-widget').innerHTML = "<p>Město nebylo nalezeno.</p>";
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('weather-widget').innerHTML = "<p>Nepodařilo se získat souřadnice města.</p>";
+                });
+        }
+
+        function getWeather(latitude, longitude, city) {
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=Europe%2FPrague`)
+                .then(response => response.json())
+                .then(data => {
+                    var weatherDiv = document.getElementById('weather-widget');
+                    var weather = data.current_weather;
+                    weatherDiv.innerHTML = `
+                        <h3>Počasí v ${city}</h3>
+                        <p>Teplota: ${weather.temperature} °C</p>
+                        <p>Rychlost větru: ${weather.windspeed} m/s</p>
+                    `;
+                })
+                .catch(() => {
+                    document.getElementById('weather-widget').innerHTML = "<p>Nepodařilo se načíst údaje o počasí.</p>";
+                });
+        }
+    </script>
 {% endblock %}
