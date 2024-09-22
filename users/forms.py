@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile
+from .models import Profile, Product
 
 
 class UserRegisterForm(UserCreationForm):
@@ -34,3 +34,9 @@ class ProfileUpdateForm(forms.ModelForm):
 
 class ProductSearchForm(forms.Form):
     query = forms.CharField(max_length=100, label='Search for products')
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'image_url', 'category', 'availability', 'author', 'image']

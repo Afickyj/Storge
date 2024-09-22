@@ -9,9 +9,11 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/update/', views.profile_update, name='profile-update'),
     path('categories/', views.category_list, name='category_list'),
-    path('products/', views.product_list, name='product_list'),  # Nová cesta pro seznam produktů
+    path('products/', views.product_list, name='product_list'),
     path('', views.home, name='home'),
     path('search/', views.product_search, name='product_search'),
+    path('products/edit/<int:pk>/', views.ProductUpdateView.as_view(), name='product_edit'),
+    path('products/delete/<int:pk>/', views.ProductDeleteView.as_view(), name='product_delete'),
 
     # Cart URLs
     path('cart/', views.cart_detail, name='cart_detail'),

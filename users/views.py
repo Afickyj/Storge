@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProductSearchForm
+from .forms import (UserRegisterForm, UserUpdateForm, ProfileUpdateForm,
+                    ProductSearchForm, ProductForm)
 from .models import Category, Product
 from django.conf import settings
 from .cart import Cart
@@ -7,6 +8,9 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic import UpdateView, DeleteView
+from django.urls import reverse_lazy
 
 
 # Registrace uživatele
@@ -33,7 +37,8 @@ def profile(request):
 def profile_update(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        p_form = ProfileUpdateForm(
+            request.POST, request.FILES, instance=request.user.profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
@@ -91,6 +96,7 @@ def product_search(request):
 
     return render(request, 'users/product_search.html', {'form': form, 'results': results})
 
+
 def product_list(request):
     """
     View pro zobrazení seznamu produktů jako mřížka nebo seznam.
@@ -104,7 +110,7 @@ def product_list(request):
         current_category = get_object_or_404(Category, id=category_id)
         products = products.filter(category_id=category_id)
 
-    paginator = Paginator(products, 12)  # 12 produktů na stránku
+    paginator = Paginator(products.order_by('id'), 12)  # Přidáno order_by pro eliminaci varování
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -114,6 +120,7 @@ def product_list(request):
         'current_category': current_category,  # Přidání aktuální kategorie do kontextu
     }
     return render(request, 'users/product_list.html', context)
+
 
 @require_POST
 def cart_add(request, product_id):
@@ -144,3 +151,22 @@ def cart_remove(request, product_id):
 def cart_detail(request):
     cart = Cart(request)
     return render(request, 'users/cart_detail.html', {'cart': cart})
+
+
+class ProductUpdateView(UserPassesTestMixin, UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'users/product_edit.html'  # Vytvoříme tuto šablonu
+    success_url = reverse_lazy('product_list')  # Přesměrování po úspěšném upravení
+
+    def test_func(self):
+        return self.request.user.is_superuser  # Ověření, že uživatel je superuživatel
+
+
+class ProductDeleteView(UserPassesTestMixin, DeleteView):
+    model = Product
+    template_name = 'users/product_confirm_delete.html'  # Vytvoříme tuto šablonu
+    success_url = reverse_lazy('product_list')  # Přesměrování po úspěšném smazání
+
+    def test_func(self):
+        return self.request.user.is_superuser  # Ověření, že uživatel je superuživatel

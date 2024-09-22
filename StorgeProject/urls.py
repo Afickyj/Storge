@@ -7,8 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),  # Include the 'users' app at the root URL
-    # Remove the 'home' view and the duplicate inclusion of 'users.urls'
+    path('', include('users.urls')),
 ]
 
 # Serve media files during development
