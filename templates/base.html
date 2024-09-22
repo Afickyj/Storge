@@ -28,7 +28,7 @@
         }
         .navbar-custom .nav-link, .navbar-custom .navbar-brand {
             color: #fff !important;
-            font-size: 0.9rem;
+            font-size: 1rem;
             padding: 10px 15px;
         }
         .navbar-custom .nav-link:hover, .navbar-custom .navbar-brand:hover {
@@ -46,6 +46,36 @@
             border-color: #339933;
             color: #fff;
         }
+        /* Centrování a zvětšení vyhledávacího pole */
+        .navbar-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            max-width: 800px; /* Zvýšená šířka pro delší search bar */
+        }
+        .navbar-center .form-control {
+            width: 100%;
+            height: 2.5rem; /* Úzká výška */
+            font-size: 1rem;
+            border-radius: 0.25rem;
+        }
+        .navbar-center .btn {
+            height: 2.5rem; /* Zarovnání výšky tlačítka s inputem */
+            font-size: 1rem;
+            border-radius: 0.25rem;
+        }
+        /* Oprava zarovnání tlačítka Odhlásit se */
+        .navbar-nav .nav-item {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-nav .nav-item .nav-link,
+        .navbar-nav .nav-item .btn {
+            display: flex;
+            align-items: center;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
         /* Obsah stránky */
         .content {
             flex: 1;
@@ -57,6 +87,7 @@
             color: #fff;
             text-align: center;
             padding: 10px 0;
+            position: relative;
         }
         /* Zprávy */
         .messages {
@@ -86,29 +117,28 @@
             font-weight: bold;
             text-decoration: underline;
         }
-        /* Oprava zarovnání tlačítka Odhlásit se */
-        .navbar-nav .nav-item {
-            display: flex;
-            align-items: center;
+        /* Minimalistický weather widget v pravém horním rohu */
+        .weather-widget {
+            position: absolute;
+            top: 70px; /* Vzdálenost od horní lišty */
+            right: 20px; /* Vzdálenost od pravého okraje */
+            width: 150px; /* Menší šířka */
+            background-color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 8px;
+            z-index: 1000;
+            text-align: center;
         }
-        .navbar-nav .nav-item .nav-link,
-        .navbar-nav .nav-item .btn {
-            display: flex;
-            align-items: center;
-            padding-top: 0;
-            padding-bottom: 0;
+        .weather-widget h6 {
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            color: #004d00;
         }
-        /* Centrování a zvětšení vyhledávacího pole */
-        .navbar-center {
-            width: 40%; /* Zvětšená šířka */
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .navbar-center .form-control {
-            height: 2.5rem; /* Užší výška */
-        }
-        .navbar-center .btn {
-            height: 2.5rem; /* Zarovnání výšky tlačítka s inputem */
+        .weather-widget p {
+            margin: 2px 0;
+            font-size: 0.8rem;
         }
     </style>
     {% block extra_head %}{% endblock %}
@@ -116,72 +146,91 @@
 <body>
     <!-- Horní navigační panel -->
     <nav class="navbar navbar-expand-lg navbar-custom mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Storge</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Přepnout navigaci">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Levá strana navigace -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <!-- Odkaz Domů -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Domů</a>
-                    </li>
-                    <!-- Produkty Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="produktyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Produkty
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="produktyDropdown">
-                            <li>
-                                <a class="dropdown-item {% if not request.GET.category %}active{% endif %}" href="{% url 'product_list' %}">Vše</a>
-                            </li>
-                            {% for category in categories %}
+        <div class="container-fluid position-relative">
+            <!-- Levá část: Brand + Domů + Produkty -->
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="{% url 'home' %}">Storge</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLeft"
+                        aria-controls="navbarLeft" aria-expanded="false" aria-label="Přepnout navigaci">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarLeft">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <!-- Odkaz Domů -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Domů</a>
+                        </li>
+                        <!-- Produkty Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="produktyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Produkty
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="produktyDropdown">
                                 <li>
-                                    <a class="dropdown-item {% if request.GET.category == category.id|stringformat:"s" %}active{% endif %}" href="{% url 'product_list' %}?category={{ category.id }}">{{ category.name }}</a>
+                                    <a class="dropdown-item {% if not request.GET.category %}active{% endif %}" href="{% url 'product_list' %}">Vše</a>
                                 </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-                <!-- Vyhledávací formulář uprostřed a zvětšený -->
-                <form class="d-flex navbar-center" method="get" action="{% url 'product_search' %}">
+                                {% for category in categories %}
+                                    <li>
+                                        <a class="dropdown-item {% if request.GET.category == category.id|stringformat:"s" %}active{% endif %}" href="{% url 'product_list' %}?category={{ category.id }}">{{ category.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Střední část: Search bar -->
+            <div class="navbar-center">
+                <form class="d-flex w-100" method="get" action="{% url 'product_search' %}">
                     <input class="form-control me-2" type="search" name="query" placeholder="Hledat produkty" aria-label="Hledat" value="{{ request.GET.query }}">
                     <button class="btn btn-outline-light" type="submit">Hledat</button>
                 </form>
-                <!-- Pravá strana navigace -->
-                <ul class="navbar-nav mb-2 mb-lg-0">
-                    <!-- Košík a Objednávky -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
-                    </li>
-                    {% if user.is_authenticated %}
+            </div>
+            <!-- Pravá část: Košík, Objednávky, Uživatelské odkazy -->
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarRight"
+                        aria-controls="navbarRight" aria-expanded="false" aria-label="Přepnout navigaci">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarRight">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <!-- Košík a Objednávky -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'order_list' %}">Objednávky</a>
+                            <a class="nav-link" href="{% url 'cart_detail' %}">Košík ({{ cart|length }})</a>
                         </li>
-                    {% endif %}
-                    <!-- Uživatelské odkazy -->
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <form id="logout-form" action="{% url 'logout' %}" method="POST" class="d-flex align-items-center mb-0">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-link nav-link p-0" style="color: #fff;">Odhlásit se</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Přihlásit se</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Zaregistrovat se</a>
-                        </li>
-                    {% endif %}
-                </ul>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'order_list' %}">Objednávky</a>
+                            </li>
+                        {% endif %}
+                        <!-- Uživatelské odkazy -->
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <form id="logout-form" action="{% url 'logout' %}" method="POST" class="d-flex align-items-center mb-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link nav-link p-0" style="color: #fff;">Odhlásit se</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Přihlásit se</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register' %}">Zaregistrovat se</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <!-- Minimalistický weather widget -->
+            <div id="weather-widget" class="weather-widget">
+                <h6>Počasí</h6>
+                <p id="weather-city"><strong>Praha</strong></p>
+                <p id="weather-temp">Teplota: 0°C</p>
+                <p id="weather-wind">Vítr: 0 m/s</p>
             </div>
         </div>
     </nav>
@@ -235,19 +284,20 @@
             });
         });
     </script>
-    <!-- JavaScript pro widget počasí -->
+    <!-- JavaScript pro weather widget -->
     <script>
-        document.getElementById('weather-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            var city = document.getElementById('city-input').value;
-            if (city) {
-                getCoordinates(city);
-            } else {
-                document.getElementById('weather-result').innerHTML = "Zadejte platné město.";
-            }
+        // Načítání počasí při načtení stránky
+        document.addEventListener("DOMContentLoaded", function(){
+            getWeatherByDefault();
         });
 
-        function getCoordinates(city) {
+        function getWeatherByDefault() {
+            // Nastavte výchozí město, např. Praha
+            var defaultCity = "Praha";
+            fetchWeather(defaultCity);
+        }
+
+        function fetchWeather(city) {
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`)
                 .then(response => response.json())
                 .then(data => {
@@ -256,11 +306,17 @@
                         var longitude = data[0].lon;
                         getWeather(latitude, longitude, city);
                     } else {
-                        document.getElementById('weather-result').innerHTML = "Město nebylo nalezeno.";
+                        document.getElementById('weather-widget').innerHTML = `
+                            <h6>Počasí</h6>
+                            <p>Město nebylo nalezeno.</p>
+                        `;
                     }
                 })
                 .catch(() => {
-                    document.getElementById('weather-result').innerHTML = "Chyba při získávání souřadnic.";
+                    document.getElementById('weather-widget').innerHTML = `
+                        <h6>Počasí</h6>
+                        <p>Nepodařilo se získat souřadnice města.</p>
+                    `;
                 });
         }
 
@@ -268,12 +324,16 @@
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=Europe%2FPrague`)
                 .then(response => response.json())
                 .then(data => {
-                    var weatherDiv = document.getElementById('weather-result');
                     var weather = data.current_weather;
-                    weatherDiv.innerHTML = `${city}: ${weather.temperature} °C, ${weather.windspeed} m/s`;
+                    document.getElementById('weather-city').innerText = city;
+                    document.getElementById('weather-temp').innerText = `Teplota: ${weather.temperature} °C`;
+                    document.getElementById('weather-wind').innerText = `Vítr: ${weather.windspeed} m/s`;
                 })
                 .catch(() => {
-                    document.getElementById('weather-result').innerHTML = "Chyba při načítání počasí.";
+                    document.getElementById('weather-widget').innerHTML = `
+                        <h6>Počasí</h6>
+                        <p>Nepodařilo se načíst údaje o počasí.</p>
+                    `;
                 });
         }
     </script>
