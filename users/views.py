@@ -19,6 +19,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseForbidden
 
+import random
+from django.utils import timezone
+
 # Registrace uživatele
 def register(request):
     if request.method == 'POST':
@@ -65,17 +68,21 @@ def category_list(request):
     return render(request, 'users/category_list.html', {'categories': categories})
 
 def home(request):
-    print("Database NAME in view:", settings.DATABASES['default']['NAME'])
     categories = Category.objects.all()
     products = Product.objects.all()
-    search_form = ProductSearchForm()  # Vytvoření instance formuláře
-    print("Categories in view:", categories)
-    print("Products in view:", products)
-    return render(request, 'users/home.html', {
+
+    # Seed the random number generator with the current date to change products every 24 hours
+    seed = timezone.now().date().toordinal()
+    random.seed(seed)
+
+    # Randomly select 5 products
+    trending_products = random.sample(list(products), min(len(products), 5))
+
+    context = {
         'categories': categories,
-        'products': products,
-        'search_form': search_form  # Přidání formuláře do kontextu
-    })
+        'trending_products': trending_products,
+    }
+    return render(request, 'users/home.html', context)
 
 def product_list(request):
     """
@@ -145,6 +152,13 @@ def product_search(request):
         return render(request, 'users/product_list_partial.html', context)
     else:
         return render(request, 'users/product_search.html', context)
+
+def product_detail(request, product_id):
+    """
+    View pro zobrazení detailu produktu.
+    """
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'users/product_detail.html', {'product': product})
 
 @require_POST
 def cart_add(request, product_id):

@@ -1,40 +1,42 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Domů{% endblock %}
 
 {% block content %}
     <h2>Aktuálně Populární</h2>
 
-    <!-- Seznam kategorií a produktů -->
-    {% for category in categories %}
-        <h3>{{ category.name }}</h3>
-        {% if category.products.all %}
-            <ul class="list-group mb-4">
-                {% for product in category.products.all %}
-                    <li class="list-group-item d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
+    {% if trending_products %}
+        <ul class="list-group mb-4">
+            {% for product in trending_products %}
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        {% if product.image_url %}
                             <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
-                            <div>
-                                <strong>{{ product.name }}</strong><br>
-                                {{ product.price }} Kč
-                            </div>
-                        </div>
+                        {% elif product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                        {% else %}
+                            <!-- Default image for products without an image -->
+                            <img src="{% static 'images/default_product.jpg' %}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
+                        {% endif %}
                         <div>
-                            <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
-                                <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
-                            </form>
+                            <strong>{{ product.name }}</strong><br>
+                            {{ product.price }} Kč
                         </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Žádné produkty v této kategorii.</p>
-        {% endif %}
-    {% empty %}
-        <p>Žádné kategorie nebyly nalezeny.</p>
-    {% endfor %}
+                    </div>
+                    <div>
+                        <form action="{% url 'cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" min="1" class="form-control me-2" style="width: 80px;">
+                            <button type="submit" class="btn btn-success btn-sm">Přidat do Košíku</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Žádné produkty k zobrazení.</p>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
