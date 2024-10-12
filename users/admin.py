@@ -20,11 +20,19 @@ class CategoryAdmin(admin.ModelAdmin):
 # Registrace modelu Product s vlastním Admin třídou
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'availability', 'author']
+    list_display = ['name', 'category', 'price', 'stock', 'availability', 'author']  # Přidáno 'stock'
     search_fields = ['name', 'category__name']
     list_filter = ['availability', 'category', 'author']
-    list_editable = ['price', 'availability']
+    list_editable = ['price', 'stock', 'availability']  # Přidáno 'stock' do 'list_editable'
     raw_id_fields = ['author']  # Zlepšení výkonu při výběru autora
+
+    # Přidání API pole pro správu produktů
+    readonly_fields = ['api_field']
+
+    def api_field(self, obj):
+        return f"/api/products/{obj.id}/"
+
+    api_field.short_description = "API Endpoint"
 
 
 class OrderItemInline(admin.TabularInline):

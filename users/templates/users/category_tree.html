@@ -12,7 +12,7 @@
     <ul>
         {% for category in parent_categories %}
             <li>
-                <strong>{{ category.name }}</strong>
+                <strong><a href="{% url 'product_list' %}?category={{ category.id }}" class="product-name">{{ category.name }}</a></strong>
                 <a href="{% url 'move_category' category.id %}" class="btn btn-link">Přesunout</a>
                 {% include 'users/partials/category_subtree.html' with category=category %}
             </li>

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+from django.urls import reverse
 
 
 class Profile(models.Model):
@@ -46,6 +48,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField(max_length=200, blank=True)
+    stock = models.PositiveIntegerField(default=0)  # Opraveno z 'tock' na 'stock'
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     availability = models.BooleanField(default=True)
     author = models.ForeignKey(
@@ -61,7 +64,6 @@ class Product(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        from django.urls import reverse
         return reverse('product_detail', args=[self.id])
 
     class Meta:
@@ -90,10 +92,10 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    address = models.CharField(max_length=255, default='Zadejte adresu doručení')  # Změněno na "Zadejte adresu doručení"
+    address = models.CharField(max_length=255, default='Zadejte adresu doručení')
     delivery_method = models.CharField(max_length=10, choices=DELIVERY_CHOICES, default='courier')
     payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='cash')
-    delivery_price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)  # Přidáno pole pro cenu dopravy
+    delivery_price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
@@ -107,7 +109,7 @@ class Order(models.Model):
 
     def get_total_cost(self):
         items_total = sum(item.get_cost() for item in self.items.all())
-        return items_total + self.delivery_price  # Zahrnutí ceny dopravy
+        return items_total + self.delivery_price
 
 
 class OrderItem(models.Model):

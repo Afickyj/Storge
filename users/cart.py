@@ -25,8 +25,12 @@ class Cart:
                 'price': str(product.price)
             }
         if update_quantity:
+            if quantity > product.stock:
+                quantity = product.stock
             self.cart[product_id]['quantity'] = quantity
         else:
+            if self.cart[product_id]['quantity'] + quantity > product.stock:
+                quantity = product.stock - self.cart[product_id]['quantity']
             self.cart[product_id]['quantity'] += quantity
         self.save()
 

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Nákupní Košík{% endblock %}
 
 {% block content %}
+<div class="container my-4">
     <h2>Váš Nákupní Košík</h2>
     {% if cart %}
         <table class="table table-bordered">
@@ -18,39 +20,45 @@
             <tbody>
                 {% for item in cart %}
                     <tr>
-                        <td>
-                            {% if item.product.image %}
-                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
-                            {% elif item.product.image_url %}
-                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
-                            {% else %}
-                                <img src="path/to/default/image.jpg" alt="{{ item.product.name }}" style="max-width:100px; max-height:100px;">
-                            {% endif %}
-                            {{ item.product.name }}
+                        <td class="d-flex align-items-center">
+                            <a href="{{ item.product.get_absolute_url }}" class="product-image me-3">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                                {% elif item.product.image_url %}
+                                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                                {% else %}
+                                    <img src="{% static 'images/default_product.jpg' %}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                                {% endif %}
+                            </a>
+                            <a href="{{ item.product.get_absolute_url }}" class="product-name">{{ item.product.name }}</a>
                         </td>
                         <td>{{ item.price }} Kč</td>
                         <td>
-                            <form action="{% url 'cart_update' item.product.id %}" method="post">
+                            <form action="{% url 'cart_update' item.product.id %}" method="post" class="d-flex">
                                 {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control" style="width:80px;">
-                                <button type="submit" class="btn btn-sm btn-primary mt-2">Aktualizovat</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control me-2" style="width: 80px;">
+                                <button type="submit" class="btn btn-secondary btn-sm">Aktualizovat</button>
                             </form>
+                            <small>Dostupné množství: {{ item.product.stock }} ks</small>
                         </td>
                         <td>{{ item.total_price }} Kč</td>
                         <td>
                             <form action="{% url 'cart_remove' item.product.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger">Odstranit</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Odstranit</button>
                             </form>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <h3>Celkem: {{ cart.get_total_price }} Kč</h3>
-        <!-- Přidáme tlačítko pro dokončení objednávky -->
-        <a href="{% url 'order_create' %}" class="btn btn-success">Pokračovat k objednávce</a>
+        <h4 class="text-end">Celkem k úhradě: {{ cart.get_total_price }} Kč</h4>
+        <div class="text-end">
+            <a href="{% url 'order_create' %}" class="btn btn-primary btn-lg">Pokračovat k objednávce</a>
+        </div>
     {% else %}
         <p>Váš košík je prázdný.</p>
     {% endif %}
+</div>
+<p class="text-center mt-4">Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}

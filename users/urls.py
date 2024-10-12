@@ -20,13 +20,14 @@ urlpatterns = [
     path('categories/tree/', views.category_tree, name='category_tree'),
     path('categories/move/<int:category_id>/', views.move_category, name='move_category'),
     path('product_search/', views.product_search, name='product_search'),
-
+    path('api/products/', views.api_product_list, name='api_product_list'),
+    path('api/products/<int:product_id>/', views.api_product_detail, name='api_product_detail'),
     # Cart URLs
     path('cart/', views.cart_detail, name='cart_detail'),
     path('cart/add/<int:product_id>/', views.cart_add, name='cart_add'),
     path('cart/update/<int:product_id>/', views.cart_update, name='cart_update'),
     path('cart/remove/<int:product_id>/', views.cart_remove, name='cart_remove'),
-
-    # Added URL pattern for product_detail
+    # URL pattern pro product_detail a update_stock
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+    path('product/<int:product_id>/update_stock/', views.update_stock, name='update_stock'),
 ]

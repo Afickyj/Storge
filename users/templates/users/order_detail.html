@@ -1,15 +1,35 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Detail objednávky{% endblock %}
+{% block title %}Detail objednávky č. {{ order.id }}{% endblock %}
 
 {% block content %}
-    <h2>Objednávka č. {{ order.id }}</h2>
-    <p>Datum vytvoření: {{ order.created }}</p>
-    <p>Uživatel: {{ order.user.username }}</p>
-    <p>Stav: {{ order.get_status_display }}</p>
-    <p>Zaplaceno: {{ order.paid|yesno:"Ano,Ne" }}</p>
-    <h3>Položky:</h3>
-    <table class="table">
+<div class="container my-4">
+    <h2 class="mb-4">Objednávka č. {{ order.id }}</h2>
+    <div class="row">
+        <!-- Informace o objednávce -->
+        <div class="col-md-6">
+            <h4>Informace o objednávce</h4>
+            <p><strong>Datum vytvoření:</strong> {{ order.created }}</p>
+            <p><strong>Stav:</strong> {{ order.get_status_display }}</p>
+            <p><strong>Zaplaceno:</strong> {{ order.paid|yesno:"Ano,Ne" }}</p>
+            <p><strong>Způsob dopravy:</strong> {{ order.get_delivery_method_display }}</p>
+            <p><strong>Způsob platby:</strong> {{ order.get_payment_method_display }}</p>
+            <p><strong>Adresa doručení:</strong> {{ order.address }}</p>
+        </div>
+        <!-- Informace o uživateli -->
+        <div class="col-md-6">
+            <h4>Informace o zákazníkovi</h4>
+            <p><strong>Jméno:</strong> {{ order.user.username }}</p>
+            <p><strong>Email:</strong> {{ order.user.email }}</p>
+            {% if order.user.profile %}
+                <p><strong>Město:</strong> {{ order.user.profile.city }}</p>
+                <p><strong>Adresa:</strong> {{ order.user.profile.address }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <h4 class="mt-4">Položky objednávky</h4>
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Produkt</th>
@@ -21,7 +41,18 @@
         <tbody>
             {% for item in order.items.all %}
                 <tr>
-                    <td>{{ item.product.name }}</td>
+                    <td class="d-flex align-items-center">
+                        <a href="{{ item.product.get_absolute_url }}" class="product-image me-3">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                            {% elif item.product.image_url %}
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                            {% else %}
+                                <img src="{% static 'images/default_product.jpg' %}" alt="{{ item.product.name }}" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: contain;">
+                            {% endif %}
+                        </a>
+                        <a href="{{ item.product.get_absolute_url }}" class="product-name">{{ item.product.name }}</a>
+                    </td>
                     <td>{{ item.price }} Kč</td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.get_cost }} Kč</td>
@@ -29,5 +60,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <h3>Celková cena: {{ order.get_total_cost }} Kč</h3>
+    <h4 class="text-end">Celková cena: {{ order.get_total_cost }} Kč</h4>
+</div>
+<p class="text-center mt-4">Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}

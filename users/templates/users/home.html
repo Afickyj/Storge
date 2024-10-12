@@ -11,16 +11,17 @@
             {% for product in trending_products %}
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
-                        {% elif product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
-                        {% else %}
-                            <!-- Default image for products without an image -->
-                            <img src="{% static 'images/default_product.jpg' %}" alt="{{ product.name }}" style="max-width:100px; max-height:100px; margin-right: 20px;">
-                        {% endif %}
+                        <a href="{{ product.get_absolute_url }}" class="product-image me-3">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% elif product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default_product.jpg' %}" alt="{{ product.name }}">
+                            {% endif %}
+                        </a>
                         <div>
-                            <strong>{{ product.name }}</strong><br>
+                            <a href="{{ product.get_absolute_url }}" class="product-name"><strong>{{ product.name }}</strong></a><br>
                             {{ product.price }} Kč
                         </div>
                     </div>

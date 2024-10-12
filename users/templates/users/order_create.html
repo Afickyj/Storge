@@ -23,8 +23,11 @@
     <h3>Obsah Košíku</h3>
     <ul>
         {% for item in cart %}
-            <li>{{ item.product.name }} - {{ item.quantity }} ks</li>
+            <li>
+                <a href="{{ item.product.get_absolute_url }}" class="product-name">{{ item.product.name }}</a> - {{ item.quantity }} ks
+            </li>
         {% endfor %}
     </ul>
     <h4>Celková cena: {{ cart.get_total_price }} Kč</h4>
+    <p>Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}

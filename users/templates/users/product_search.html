@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     Vyhledávání produktů
@@ -6,8 +7,6 @@
 
 {% block content %}
     <h2>Vyhledávání produktů</h2>
-
-    <!-- Odstraněn vyhledávací formulář -->
 
     <!-- Sekce s produkty a stránkováním -->
     <div id="product-container">
@@ -28,30 +27,17 @@
                 }).then(response => response.text());
             }
 
-            // Zachytávání odeslání vyhledávacího formuláře
-            const searchForm = document.getElementById('search-form');
-            if (searchForm) {
-                searchForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(searchForm);
-                    const queryParams = new URLSearchParams(formData).toString();
-                    const url = searchForm.action + '?' + queryParams;
-                    loadContent(url).then(html => {
-                        document.getElementById('product-container').innerHTML = html;
-                        window.history.pushState(null, '', url);
-                    });
-                });
-            }
-
-            // Delegace událostí pro stránkovací odkazy
+            // Delegace událostí pro stránkovací odkazy a odkazy na produkty
             document.getElementById('product-container').addEventListener('click', function(e) {
-                if (e.target.tagName === 'A' && e.target.closest('.pagination')) {
-                    e.preventécut();
-                    const url = e.target.href;
-                    loadContent(url).then(html => {
-                        document.getElementById('product-container').innerHTML = html;
-                        window.history.pushState(null, '', url);
-                    });
+                if (e.target.tagName === 'A') {
+                    const href = e.target.getAttribute('href');
+                    if (e.target.classList.contains('pagination-link')) {
+                        e.preventDefault();
+                        loadContent(href).then(html => {
+                            document.getElementById('product-container').innerHTML = html;
+                            window.history.pushState(null, '', href);
+                        });
+                    }
                 }
             });
 

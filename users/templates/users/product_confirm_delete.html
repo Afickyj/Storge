@@ -2,10 +2,11 @@
 
 {% block content %}
     <h2>Smazat Produkt</h2>
-    <p>Opravdu chcete smazat produkt "{{ object.name }}"?</p>
+    <p>Opravdu chcete smazat produkt "<strong>{{ object.name }}</strong>"?</p>
     <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Ano, smazat</button>
         <a href="{% url 'product_list' %}" class="btn btn-secondary">Zrušit</a>
     </form>
+    <p>Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}

@@ -121,7 +121,7 @@
         .content {
             flex: 1;
             padding: 20px;
-            padding-bottom: 150px; /* Added to prevent overlap with weather widget */
+            padding-bottom: 150px; /* Přidáno, aby se nepřekrýval widget počasí */
         }
 
         /* Dolní panel (footer) */
@@ -218,6 +218,40 @@
             .weather-icon {
                 font-size: 1.5rem;
             }
+        }
+
+        /* Hover efekt pro názvy produktů */
+        .product-name:hover {
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* Hover efekt pro obrázky produktů */
+        .product-image {
+            transition: transform 0.2s;
+        }
+
+        .product-image:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        /* Nastavení stejné velikosti obrázků */
+        .product-image img {
+            width: 100px; /* Zmenšená šířka obrázku */
+            height: 100px; /* Zmenšená výška obrázku */
+            object-fit: contain; /* Zajistí, že celý produkt bude vidět bez oříznutí */
+            border-radius: 5px; /* Volitelné: zakulacení rohů */
+            background-color: #f8f9fa; /* Volitelné: přidání pozadí pro lepší vzhled */
+            padding: 5px; /* Volitelné: přidání odsazení kolem obrázku */
+        }
+
+        /* Avatar v profilu */
+        .avatar {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
         }
     </style>
     {% block extra_head %}{% endblock %}
@@ -347,6 +381,7 @@
 <footer class="footer mt-auto">
     <div class="container">
         <p>&copy; {{ year }} Storge. Všechna práva vyhrazena.</p>
+        <p>Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
     </div>
 </footer>
 

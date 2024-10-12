@@ -6,4 +6,5 @@
     <h2>Objednávka byla úspěšně vytvořena!</h2>
     <p>Číslo vaší objednávky je <strong>{{ order.id }}</strong>.</p>
     <a href="{% url 'order_detail' order.id %}" class="btn btn-primary">Zobrazit detaily objednávky</a>
+    <p>Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}

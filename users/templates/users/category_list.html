@@ -5,14 +5,18 @@
 
     <ul>
         {% for category in categories %}
-            <li>{{ category.name }}</li>
-            {% if category.subcategories.all %}
-                <ul>
-                    {% for subcategory in category.subcategories.all %}
-                        <li>{{ subcategory.name }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            <li>
+                <strong>{{ category.name }}</strong>
+                {% if category.subcategories.all %}
+                    <ul>
+                        {% for subcategory in category.subcategories.all %}
+                            <li>
+                                <a href="{% url 'product_list' %}?category={{ subcategory.id }}" class="product-name">{{ subcategory.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}

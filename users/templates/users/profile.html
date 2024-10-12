@@ -12,4 +12,5 @@
     <p>Role: {{ user.profile.get_role_display }}</p>
     <p>Komunikační Kanál: {{ user.profile.get_communication_channel_display }}</p>
     <p><a href="{% url 'profile-update' %}">Aktualizovat Profil</a></p>
+    <p>Potřebujete pomoc? Kontaktujte nás na <a href="mailto:support@storge.cz">support@storge.cz</a></p>
 {% endblock %}
