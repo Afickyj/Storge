@@ -1,3 +1,4 @@
+<!-- templates/users/product_list_partial.html -->
 {% load static %}
 
 {% if products %}
@@ -45,9 +46,9 @@
                     </li>
                 {% endif %}
                 {% for num in products.paginator.page_range %}
-                    {% if products.number == num %}
+                    {% if num == products.number %}
                         <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% else %}
+                    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
                         <li class="page-item">
                             <a class="page-link pagination-link" href="?page={{ num }}{% if current_category %}&amp;category={{ current_category.id }}{% endif %}{% if search_query %}&amp;query={{ search_query }}{% endif %}">{{ num }}</a>
                         </li>
@@ -65,6 +66,7 @@
                     </li>
                 {% endif %}
             </ul>
+            <p class="text-center">Stránka {{ products.number }} z {{ products.paginator.num_pages }}</p>
         </nav>
     {% endif %}
 {% else %}

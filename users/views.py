@@ -1,3 +1,5 @@
+# views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import (
     UserRegisterForm,
@@ -107,7 +109,7 @@ def product_list(request):
     if search_query:
         products = products.filter(name__icontains=search_query) | products.filter(description__icontains=search_query)
 
-    paginator = Paginator(products.order_by('id'), 12)  # Počet produktů na stránku
+    paginator = Paginator(products.order_by('id'), 6)  # Počet produktů na stránku (nastaveno na 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -118,6 +120,7 @@ def product_list(request):
         'search_query': search_query
     }
 
+    # Zpracování AJAX požadavků
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'users/product_list_partial.html', context)
     else:
@@ -140,7 +143,7 @@ def product_search(request):
     if search_query:
         results = results.filter(name__icontains=search_query) | results.filter(description__icontains=search_query)
 
-    paginator = Paginator(results.order_by('id'), 12)  # Počet produktů na stránku
+    paginator = Paginator(results.order_by('id'), 6)  # Počet produktů na stránku (nastaveno na 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -150,6 +153,7 @@ def product_search(request):
         'current_category': current_category,
     }
 
+    # Zpracování AJAX požadavků
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'users/product_list_partial.html', context)
     else:
