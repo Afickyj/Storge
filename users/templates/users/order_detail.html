@@ -1,3 +1,5 @@
+<!-- templates/users/order_detail.html -->
+
 {% extends 'base.html' %}
 {% load static %}
 
@@ -17,14 +19,19 @@
             <p><strong>Způsob platby:</strong> {{ order.get_payment_method_display }}</p>
             <p><strong>Adresa doručení:</strong> {{ order.address }}</p>
         </div>
-        <!-- Informace o uživateli -->
+        <!-- Informace o zákazníkovi -->
         <div class="col-md-6">
             <h4>Informace o zákazníkovi</h4>
-            <p><strong>Jméno:</strong> {{ order.user.username }}</p>
-            <p><strong>Email:</strong> {{ order.user.email }}</p>
-            {% if order.user.profile %}
-                <p><strong>Město:</strong> {{ order.user.profile.city }}</p>
-                <p><strong>Adresa:</strong> {{ order.user.profile.address }}</p>
+            {% if order.user %}
+                <p><strong>Uživatelské jméno:</strong> {{ order.user.username }}</p>
+                <p><strong>Email:</strong> {{ order.user.email }}</p>
+                {% if order.user.profile %}
+                    <p><strong>Město:</strong> {{ order.user.profile.city }}</p>
+                    <p><strong>Adresa:</strong> {{ order.user.profile.address }}</p>
+                {% endif %}
+            {% else %}
+                <p><strong>Jméno:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
             {% endif %}
         </div>
     </div>

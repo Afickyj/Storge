@@ -26,7 +26,6 @@ from django.http import JsonResponse
 import random
 from django.utils import timezone
 
-
 # Registrace uživatele
 def register(request):
     if request.method == 'POST':
@@ -40,12 +39,10 @@ def register(request):
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
-
 # Profilová stránka
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
-
 
 @login_required
 def profile_update(request):
@@ -69,11 +66,9 @@ def profile_update(request):
 
     return render(request, 'users/profile_update.html', context)
 
-
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'users/category_list.html', {'categories': categories})
-
 
 def home(request):
     categories = Category.objects.all()
@@ -91,7 +86,6 @@ def home(request):
         'trending_products': trending_products,
     }
     return render(request, 'users/home.html', context)
-
 
 def product_list(request):
     products = Product.objects.all()
@@ -126,7 +120,6 @@ def product_list(request):
     else:
         return render(request, 'users/product_list.html', context)
 
-
 def product_search(request):
     form = ProductSearchForm()
     results = Product.objects.all()
@@ -159,14 +152,12 @@ def product_search(request):
     else:
         return render(request, 'users/product_search.html', context)
 
-
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     context = {
         'product': product,
     }
     return render(request, 'users/product_detail.html', context)
-
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -182,7 +173,6 @@ def update_stock(request, product_id):
             messages.error(request, 'Zadejte platné množství.')
     return redirect('product_detail', product_id=product.id)
 
-
 @require_POST
 def cart_add(request, product_id):
     cart = Cart(request)
@@ -196,7 +186,6 @@ def cart_add(request, product_id):
     cart.add(product=product, quantity=form_quantity, update_quantity=False)
     messages.success(request, 'Produkt byl přidán do košíku.')
     return redirect('cart_detail')
-
 
 @require_POST
 def cart_update(request, product_id):
@@ -212,7 +201,6 @@ def cart_update(request, product_id):
     messages.success(request, 'Košík byl aktualizován.')
     return redirect('cart_detail')
 
-
 @require_POST
 def cart_remove(request, product_id):
     cart = Cart(request)
@@ -221,11 +209,9 @@ def cart_remove(request, product_id):
     messages.success(request, 'Produkt byl odstraněn z košíku.')
     return redirect('cart_detail')
 
-
 def cart_detail(request):
     cart = Cart(request)
     return render(request, 'users/cart_detail.html', {'cart': cart})
-
 
 class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     model = Product
@@ -234,15 +220,13 @@ class ProductUpdateView(PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_edit_product'
 
-
 class ProductDeleteView(PermissionRequiredMixin, DeleteView):
     model = Product
     template_name = 'users/product_confirm_delete.html'
     success_url = reverse_lazy('product_list')
     permission_required = 'users.can_delete_product'
 
-
-@login_required
+# Odstraněn dekorátor @login_required
 def order_create(request):
     cart = Cart(request)
     if not cart:
@@ -253,7 +237,9 @@ def order_create(request):
         form = OrderCreateForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
-            order.user = request.user
+            # Pokud je uživatel přihlášen, přiřadíme ho k objednávce
+            if request.user.is_authenticated:
+                order.user = request.user
             order.save()
             for item in cart:
                 product = item['product']
@@ -270,21 +256,24 @@ def order_create(request):
                 product.stock -= item['quantity']
                 product.save()
             cart.clear()
+            request.session['order_id'] = order.id  # Uložení order_id do session
             messages.success(request, f'Objednávka {order.id} byla úspěšně vytvořena.')
             return redirect('order_detail', order_id=order.id)
     else:
         form = OrderCreateForm()
     return render(request, 'users/order_create.html', {'cart': cart, 'form': form})
 
-
-@login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    # Uživatel může vidět pouze své objednávky nebo je administrátor
-    if order.user != request.user and not request.user.is_staff:
-        return HttpResponseForbidden("Nemáte oprávnění zobrazit tuto objednávku.")
+    if order.user:
+        # Pokud je objednávka přiřazena uživateli, ověřte oprávnění
+        if order.user != request.user and not request.user.is_staff:
+            return HttpResponseForbidden("Nemáte oprávnění zobrazit tuto objednávku.")
+    else:
+        # Pokud není uživatel přihlášen a objednávka nemá uživatele
+        if not request.session.get('order_id') == order.id:
+            return HttpResponseForbidden("Nemáte oprávnění zobrazit tuto objednávku.")
     return render(request, 'users/order_detail.html', {'order': order})
-
 
 @login_required
 def order_list(request):
@@ -293,7 +282,6 @@ def order_list(request):
     else:
         orders = Order.objects.filter(user=request.user)
     return render(request, 'users/order_list.html', {'orders': orders})
-
 
 # Přehled stromu kategorií
 def category_tree(request):
@@ -312,7 +300,6 @@ def category_tree(request):
     }
     return render(request, 'users/category_tree.html', context)
 
-
 # Přemístění kategorie
 def move_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
@@ -330,7 +317,6 @@ def move_category(request, category_id):
     parent_categories = Category.objects.filter(parent_category__isnull=True).exclude(id=category_id)
     return render(request, 'users/move_category.html', {'category': category, 'parent_categories': parent_categories})
 
-
 # API endpoint pro seznam produktů
 @csrf_exempt
 def api_product_list(request):
@@ -338,7 +324,6 @@ def api_product_list(request):
         products = Product.objects.all()
         data = serializers.serialize('json', products)
         return JsonResponse({'products': data}, safe=False)
-
 
 # API endpoint pro detail produktu
 @csrf_exempt
