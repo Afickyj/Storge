@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",       # Přidáno pro použití Bootstrap 5 s crispy-forms
     "django.contrib.admin",
     "django.contrib.auth",
+    "django_extensions",       # Přidáno pro ER diagram
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
