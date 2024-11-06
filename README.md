@@ -45,27 +45,22 @@ StorgeProject je e-shopová aplikace vyvinutá pomocí Django frameworku. Umož�
     .venv\Scripts\activate     # Pro Windows
     ```
 
-3. **Instalace závislostí:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Nastavení databáze:**
+3.**Nastavení databáze:**
     ```bash
     python manage.py migrate
     ```
 
-5. **Vytvoření superuživatele:**
+4.**Vytvoření superuživatele:**
     ```bash
     python manage.py createsuperuser
     ```
 
-6. **Spuštění vývojového serveru:**
+5.**Spuštění vývojového serveru:**
     ```bash
     python manage.py runserver
     ```
 
-7. **Přístup k aplikaci:**
+6.**Přístup k aplikaci:**
     - Otevřete webový prohlížeč a přejděte na `http://localhost:8000/`
     - Pro administrativní rozhraní přejděte na `http://localhost:8000/admin/`
 
